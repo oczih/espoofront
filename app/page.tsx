@@ -1,65 +1,139 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+import { useState, useEffect } from 'react';
+import Navigation from '../components/Navigation';
+import LandingPage from '../components/LandingPage';
+import StartupGuide from '../components/StartupGuide';
+import FundingModule from '../components/FundingModule';
+import TaxationModule from '../components/TaxationModule';
+import PermitsModule from '../components/PermitsModule';
+import BankingModule from '../components/BankingModule';
+import InsuranceModule from '../components/InsuranceModule';
+import AIAssistant from '../components/AIAssistant';
+import PreMeetingPrep from '../components/PreMeetingPrep';
+import AdvisorDashboard from '../components/AdvisorDashboard';
+import ResourceLibrary from '../components/ResourceLibrary';
+import { UserType, Language, UserProfile } from './types';
+
+export type { UserType, Language, UserProfile };
+
+export default function App() {
+  const [currentPage, setCurrentPage] = useState('home');
+  const [userType, setUserType] = useState<UserType>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('userType');
+      return saved ? (saved as UserType) : null;
+    }
+    return null;
+  });
+  const [language, setLanguage] = useState<Language>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('language');
+      return saved ? (saved as Language) : 'en';
+    }
+    return 'en';
+  });
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('userProfile');
+      return saved ? JSON.parse(saved) : null;
+    }
+    return null;
+  });
+
+  // Save user data to localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if (userProfile) {
+        localStorage.setItem('userProfile', JSON.stringify(userProfile));
+      }
+      if (userType) {
+        localStorage.setItem('userType', userType);
+      }
+      localStorage.setItem('language', language);
+    }
+  }, [userProfile, userType, language]);
+
+  const handleLanguageChange = (lang: Language) => {
+    setLanguage(lang);
+    if (userProfile) {
+      setUserProfile({ ...userProfile, language: lang });
+    }
+  };
+
+  const handleProfileUpdate = (profile: UserProfile) => {
+    setUserProfile(profile);
+  };
+
+  const renderPage = () => {
+    if (!userType) {
+      return (
+        <LandingPage 
+          onSelectUserType={setUserType}
+          language={language}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      );
+    }
+
+    if (userType === 'advisor') {
+      return <AdvisorDashboard language={language} />;
+    }
+
+    switch (currentPage) {
+      case 'home':
+        return (
+          <StartupGuide 
+            userProfile={userProfile}
+            onProfileUpdate={handleProfileUpdate}
+            language={language}
+            onNavigate={setCurrentPage}
+          />
+        );
+      case 'funding':
+        return <FundingModule language={language} userProfile={userProfile} onProfileUpdate={handleProfileUpdate} />;
+      case 'taxation':
+        return <TaxationModule language={language} userProfile={userProfile} onProfileUpdate={handleProfileUpdate} />;
+      case 'permits':
+        return <PermitsModule language={language} userProfile={userProfile} onProfileUpdate={handleProfileUpdate} />;
+      case 'banking':
+        return <BankingModule language={language} userProfile={userProfile} onProfileUpdate={handleProfileUpdate} />;
+      case 'insurance':
+        return <InsuranceModule language={language} userProfile={userProfile} onProfileUpdate={handleProfileUpdate} />;
+      case 'ai-assistant':
+        return <AIAssistant language={language} userProfile={userProfile} />;
+      case 'pre-meeting':
+        return <PreMeetingPrep language={language} userProfile={userProfile} onProfileUpdate={handleProfileUpdate} />;
+      case 'resources':
+        return <ResourceLibrary language={language} />;
+      default:
+        return (
+          <StartupGuide 
+            userProfile={userProfile}
+            onProfileUpdate={handleProfileUpdate}
+            language={language}
+            onNavigate={setCurrentPage}
+          />
+        );
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {userType && (
+        <Navigation 
+          currentPage={currentPage}
+          onNavigate={setCurrentPage}
+          userType={userType}
+          language={language}
+          onLanguageChange={handleLanguageChange}
+          onLogout={() => {
+            setUserType(null);
+            setUserProfile(null);
+            setCurrentPage('home');
+          }}
+        />
+      )}
+      {renderPage()}
     </div>
   );
 }
