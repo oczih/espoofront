@@ -7,6 +7,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
 import { EspooUser } from "@/app/types";
+import { DayPicker } from "react-day-picker";
 
 interface UserDataModalProps {
   user: EspooUser; // session user
@@ -91,12 +92,27 @@ export default function UserDataModal({ user, onComplete }: UserDataModalProps) 
                     </button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={dob}
-                      onSelect={(value) => setDob(value)}
-                      disabled={(d) => d > new Date()}
-                    />
+                  <DayPicker
+  mode="single"
+  selected={dob}
+  onSelect={setDob}
+  className="p-3 rounded-md border bg-white shadow-sm text-black"
+  showOutsideDays
+  classNames={{
+    months: "flex flex-col sm:flex-row gap-2",
+    month: "flex flex-col gap-4",
+    caption: "flex justify-between items-center px-2 py-1 text-black",
+    caption_label: "text-sm font-medium text-black",
+    nav_button_previous: "p-1 rounded hover:bg-gray-100 text-black",
+    nav_button_next: "p-1 rounded hover:bg-gray-100 text-black",
+    table: "w-full border-collapse text-black",
+    head_cell: "text-xs text-black",
+    day: "text-sm p-2 rounded hover:bg-indigo-50 text-black",
+    day_selected: "bg-indigo-600 text-white",
+    day_today: "border border-indigo-400 text-black",
+    day_disabled: "text-gray-300 opacity-50 cursor-not-allowed",
+  }}
+/>
                   </PopoverContent>
                 </Popover>
               </div>

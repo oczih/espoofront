@@ -11,6 +11,8 @@ import {
   ArrowLeft,
   Check,
 } from "lucide-react";
+import { DayPicker } from "react-day-picker";
+import { useSession } from "next-auth/react";
 
 type MeetingType = "onsite" | "remote";
 
@@ -42,20 +44,20 @@ export function AppointmentBooking({
   const [uploadedFile, setUploadedFile] = useState<File | null>(
     null,
   );
-
+  const {data: session} = useSession();
   const handleBooking = () => {
     setIsBooked(true);
   };
 
   if (isBooked) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+        <div className="min-h-screen rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
         <div className="max-w-2xl mx-auto py-8">
           {onBack && (
             <Button
               variant="ghost"
               onClick={onBack}
-              className="mb-4"
+              className="mb-4 cursor-pointer text-black"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Chat
@@ -66,7 +68,7 @@ export function AppointmentBooking({
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Check className="w-8 h-8 text-green-600" />
             </div>
-            <h2 className="mb-2">Appointment Confirmed!</h2>
+            <h2 className="mb-2 text-black">Appointment Confirmed!</h2>
             <p className="text-gray-600 mb-6">
               Your{" "}
               {meetingType === "onsite" ? "on-site" : "remote"}{" "}
@@ -92,7 +94,7 @@ export function AppointmentBooking({
                   Confirmation sent to:
                 </span>{" "}
                 <strong>
-                  example@email.com and +358 40 123 4567
+                 {session?.user.email} and {session?.user.number}
                 </strong>
               </p>
             </div>
@@ -113,13 +115,13 @@ export function AppointmentBooking({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-100 px-1">
       <div className="max-w-4xl mx-auto py-8">
         {onBack && (
           <Button
             variant="ghost"
             onClick={onBack}
-            className="mb-4"
+            className="mb-4 text-black cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Chat
@@ -127,7 +129,7 @@ export function AppointmentBooking({
         )}
 
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <h1 className="mb-2">Book an Appointment</h1>
+          <h1 className="mb-2 text-black">Book an Appointment</h1>
           <p className="text-gray-600">
             Schedule a 1-hour consultation with our business
             advisor
@@ -210,19 +212,28 @@ export function AppointmentBooking({
             </Card>
 
             {/* Date Selection */}
-            <Card className="p-6">
-              <h3 className="mb-4">Select Date</h3>
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={setSelectedDate}
-                className="rounded-md border"
-                disabled={(date) =>
-                  date <
-                  new Date(new Date().setHours(0, 0, 0, 0))
-                }
-              />
-            </Card>
+            <DayPicker
+  mode="single"
+  selected={selectedDate}
+  onSelect={setSelectedDate}
+  className="p-3 rounded-md border bg-white shadow-sm text-black"
+  showOutsideDays
+  classNames={{
+    months: "flex flex-col sm:flex-row gap-2",
+    month: "flex flex-col gap-4",
+    caption: "flex justify-between items-center px-2 py-1 text-black",
+    caption_label: "text-sm font-medium text-black",
+    nav_button_previous: "p-1 rounded hover:bg-gray-100 text-black",
+    nav_button_next: "p-1 rounded hover:bg-gray-100 text-black",
+    table: "w-full border-collapse text-black",
+    head_cell: "text-xs text-black",
+    day: "text-sm p-2 rounded hover:bg-indigo-50 text-black",
+    day_selected: "bg-indigo-600 text-white",
+    day_today: "border border-indigo-400 text-black",
+    day_disabled: "text-gray-300 opacity-50 cursor-not-allowed",
+  }}
+/>
+
           </div>
 
           {/* Right Column */}
@@ -236,13 +247,13 @@ export function AppointmentBooking({
                     key={time}
                     variant={
                       selectedTime === time
-                        ? "default"
+                        ? "default" 
                         : "outline"
                     }
                     className={
                       selectedTime === time
                         ? "bg-indigo-600 hover:bg-indigo-700"
-                        : ""
+                        : "cursor-pointer"
                     }
                     onClick={() => setSelectedTime(time)}
                   >

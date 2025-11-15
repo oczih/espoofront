@@ -10,6 +10,7 @@ import { Card } from './ui/card';
 import { Checkbox } from './ui/checkbox';
 import { Label } from './ui/label';
 import { AppointmentBooking } from './AppointmentBooking';
+import { Language } from '@/app/types';
 
 interface ChecklistItem {
   id: string;
@@ -18,8 +19,8 @@ interface ChecklistItem {
 }
 
 interface NavigationProps {
-  language: string;
-  onLanguageChange: (lang: string) => void;
+  language: Language;
+  onLanguageChange: (lang: Language) => void; // <- use Language
 }
 
 export default function Navigation({ language, onLanguageChange }: NavigationProps) {
@@ -69,9 +70,8 @@ export default function Navigation({ language, onLanguageChange }: NavigationPro
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="en">English</SelectItem>
-            <SelectItem value="es">Español</SelectItem>
-            <SelectItem value="fr">Français</SelectItem>
-            <SelectItem value="de">Deutsch</SelectItem>
+            <SelectItem value="fi">Suomi</SelectItem>
+            <SelectItem value="sv" className='disabled:hover:cursor-not-allowed' disabled={true}>Svenska</SelectItem>
           </SelectContent>
         </Select>
 
@@ -113,28 +113,30 @@ export default function Navigation({ language, onLanguageChange }: NavigationPro
               </Card>
 
               <div className="pt-4">
-                <Button
-                  className={`w-full ${allChecked ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-indigo-300 cursor-not-allowed hover:bg-indigo-400'}`}
-                  onClick={handleBookingClick}
-                  disabled={!allChecked}
-                >
-                  Book Appointment
-                </Button>
+              <button
+  className={`w-full px-4 py-2 rounded-md text-white font-medium transition-colors
+    ${allChecked ? 'bg-indigo-600 hover:bg-indigo-700 cursor-pointer' : 'bg-indigo-300 cursor-not-allowed'}`}
+  onClick={handleBookingClick}
+  disabled={!allChecked}
+>
+  Book Appointment
+</button> 
+
               </div>
             </div>
           </DialogContent>
         </Dialog>
 
         {/* Render AppointmentBooking via createPortal */}
-        {showAppointment &&
-          createPortal(
-            <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50">
-              <div className="bg-white rounded-lg w-full max-w-4xl shadow-lg">
-                <AppointmentBooking onBack={closeAppointment} />
-              </div>
-            </div>,
-            document.body
-          )}
+        {showAppointment && typeof window !== 'undefined' &&
+  createPortal(
+    <div className="fixed inset-0 z-[1000] flex items-start justify-center overflow-auto bg-black/50 p-8">
+      <div className="bg-white rounded-lg w-full max-w-3xl shadow-lg my-8">
+        <AppointmentBooking onBack={closeAppointment} />
+      </div>
+    </div>,
+    document.body
+  )}
       </div>
     </div>
   );
