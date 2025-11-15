@@ -22,9 +22,23 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
     LinkedInProvider({
-      clientId: process.env.LINKEDIN_CLIENT_ID!,
-      clientSecret: process.env.LINKEDIN_CLIENT_SECRET!,
-    }),
+        clientId: process.env.LINKEDIN_CLIENT_ID!,
+        clientSecret: process.env.LINKEDIN_CLIENT_SECRET!,
+        authorization: {
+          url: 'https://www.linkedin.com/oauth/v2/authorization',
+          params: {
+            scope: 'openid profile email',
+            response_type: 'code'
+          },
+        },
+        token: {
+          url: 'https://www.linkedin.com/oauth/v2/accessToken',
+        },
+        userinfo: {
+          url: 'https://api.linkedin.com/v2/userinfo',
+        },
+        idToken: true,
+      }),
   ],
   debug: process.env.NODE_ENV === 'development',
   session: {
@@ -113,7 +127,7 @@ export const authOptions: NextAuthOptions = {
             session.user.appointments = user.appointments ?? [];
           }
       
-          session.accessToken = token.accessToken as string | undefined;
+           session.accessToken = token.accessToken as string | undefined;
           return session;
         } catch (err) {
           console.error("[Session] Error fetching user:", err);

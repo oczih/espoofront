@@ -7,6 +7,10 @@ import {
   SheetContent,
   SheetTrigger,
 } from './ui/sheet';
+import { useRouter } from 'next/navigation';
+import { signOut, useSession } from 'next-auth/react';
+import { toast } from 'sonner';
+import { startTransition, useEffect, useState } from 'react';
 
 interface NavigationProps {
   currentPage: string;
@@ -14,7 +18,6 @@ interface NavigationProps {
   userType: UserType;
   language: Language;
   onLanguageChange: (lang: Language) => void;
-  onLogout: () => void;
 }
 
 const translations = {
@@ -46,9 +49,36 @@ const translations = {
   }
 };
 
-export default function Navigation({ currentPage, onNavigate, userType, language, onLanguageChange, onLogout }: NavigationProps) {
+export default function Navigation({ currentPage, onNavigate, userType, language, onLanguageChange }: NavigationProps) {
   const t = translations[language];
-
+  const router = useRouter();
+  const { data: session } = useSession();
+  const [mounted, setMounted] = useState(false);
+  const handleSignOut = async () => {
+    await signOut({ redirect: false });
+    router.push('/');
+    toast.success('Signed out successfully');
+  };
+  useEffect(() => {
+    startTransition(() => {
+      setMounted(true);
+    });
+  }, []);
+  useEffect(() => {
+    if (!session) {
+      router.push("/");
+    }
+  }, [session, router]);
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-lg font-medium text-slate-700">Loading the app...</span>
+        </div>
+      </div>
+    );
+  }
   const menuItems = userType === 'entrepreneur' ? [
     { id: 'home', label: t.home, icon: Home },
     { id: 'funding', label: t.funding, icon: DollarSign },
@@ -95,15 +125,15 @@ export default function Navigation({ currentPage, onNavigate, userType, language
             <button
               
               onClick={() => onLanguageChange(language === 'en' ? 'fi' : 'en')}
-              className="gap-2"
+              className="gap-2 text-black cursor-pointer"
             >
               <Globe className="w-4 h-4" />
               {language === 'en' ? 'FI' : 'EN'}
             </button>
 
             <button
-              onClick={onLogout}
-              className="gap-2"
+              onClick={handleSignOut}
+              className="gap-2 text-black cursor-pointer"
             >
               <LogOut className="w-4 h-4" />
               {t.logout}

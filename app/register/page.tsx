@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Building2 } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner"
+import { useRouter } from "next/navigation";
 function Modal({ open, onClose, title, children }: { open: boolean, onClose: () => void, title: string, children: React.ReactNode }) {
   if (!open) return null;
   return (
@@ -31,12 +32,21 @@ export default function RegisterPage() {
   const [showTerms, setShowTerms] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
+const router = useRouter(); 
   
   const handleOAuthSignIn = async (provider: string) => {
+    setIsLoading(true)
     try {
-      setIsLoading(true);
-      await signIn(provider, { callbackUrl: '/home' });
+      const result = await signIn(provider, { 
+        callbackUrl: '/home',
+        redirect: false 
+      });
+      
+      if (result?.error) {
+        toast.error(`Error signing in with ${provider}: ${result.error}`);
+      } else if (result?.url) {
+        router.push(result.url);
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       toast.error(`Error signing in with ${provider}: ${message}`);

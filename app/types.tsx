@@ -21,6 +21,28 @@ export interface EspooUser {
   business: Business[] | string[]; // array of Business or ObjectId
   appointments?: Appointment[] | string[]; // array of Appointment or ObjectId
 }
+declare module "next-auth" {
+  interface User {
+    id: string;
+    username?: string;
+    dob?: string;
+    email?: string;
+    name: string;
+    number?: string;
+    oauthProvider?: string;
+    business: Business[] | string[]; // array of Business or ObjectId
+    appointments?: Appointment[] | string[]; // array of Appointment or ObjectId
+  }
+
+  interface Session {
+    user: User & {
+      name?: string;
+      email?: string;
+      image?: string;
+    };
+    accessToken?: string;
+  }
+}
 export interface Business {
   id: string;
   name: string;

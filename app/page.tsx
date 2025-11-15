@@ -300,7 +300,7 @@ export default function StartupGuide({
       <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-lg font-medium text-slate-700">Loading Fanslio...</span>
+          <span className="text-lg font-medium text-slate-700">Loading the app...</span>
         </div>
       </div>
     );
