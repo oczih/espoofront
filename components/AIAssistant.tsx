@@ -106,58 +106,6 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
     }
   }, [messages, isTyping]);
 
-  const generateResponse = (userMessage: string): string => {
-    const lowerMessage = userMessage.toLowerCase();
-    
-    // Personalized responses based on user profile
-    const userName = userProfile?.name || 'there';
-    const userIndustry = userProfile?.industry || '';
-    const userStage = userProfile?.businessStage || '';
-
-    // Funding related
-    if (lowerMessage.includes('fund') || lowerMessage.includes('money') || lowerMessage.includes('rahoitus')) {
-      return `Great question about funding! Based on your ${userStage} stage, I recommend exploring:\n\n1. **Business Finland** - Offers grants and loans for innovative projects, especially good for technology and growth-oriented businesses.\n\n2. **TE Services Start-up Grant** - Provides monthly support (€840-€1,260) for 6 months during your startup phase. Perfect if you're currently unemployed or at risk.\n\n3. **Finnvera** - State-backed loans when traditional bank financing is difficult to obtain.\n\n${userIndustry === 'technology' ? 'For tech businesses, also consider angel investors through FiBAN and venture capital firms like Lifeline Ventures or Inventure.' : ''}\n\nWould you like more details on any of these options?`;
-    }
-
-    // VAT/Tax related
-    if (lowerMessage.includes('vat') || lowerMessage.includes('alv') || lowerMessage.includes('tax') || lowerMessage.includes('vero')) {
-      return `Regarding taxation in Finland:\n\n**VAT Registration**: Required when your annual turnover exceeds €15,000. The standard VAT rate is 24%, with reduced rates of 14% and 10% for certain goods.\n\n**Business Income Tax**: Corporate income tax is 20%. For sole proprietors, profits are taxed as personal income (6-44%).\n\n**YEL Pension Insurance**: Mandatory for all entrepreneurs. About 24.1% of your assessed income.\n\nKey deadlines:\n- VAT returns: 12th of the following month (monthly filers)\n- Income tax: End of February for sole traders\n\nI recommend consulting with a tax advisor for your specific situation. Would you like information about any specific tax type?`;
-    }
-
-    // Permits/licenses
-    if (lowerMessage.includes('permit') || lowerMessage.includes('license') || lowerMessage.includes('lupa')) {
-      let response = `For permits and licenses, here's what you typically need:\n\n**Universal Requirements:**\n1. Trade Register entry (€110-€380)\n2. VAT registration (if turnover > €15,000)\n3. Prepayment Tax Register (for B2B invoicing)\n\n`;
-      
-      if (userIndustry === 'hospitality') {
-        response += `**For your hospitality business:**\n- Food handling permit from local health authority\n- Alcohol license from AVI (€500-€5,000, 2-6 months)\n- Building permit for renovations\n\n`;
-      } else if (userIndustry === 'healthcare') {
-        response += `**For healthcare services:**\n- Healthcare service license from Valvira (€150-€400)\n- Qualified healthcare professionals required\n\n`;
-      } else if (userIndustry === 'manufacturing') {
-        response += `**For manufacturing:**\n- Environmental permit (if applicable)\n- Building permit for facilities\n\n`;
-      }
-      
-      response += `The Finnish Patent and Registration Office (PRH) handles most registrations. Would you like details on any specific permit?`;
-      return response;
-    }
-
-    // Banking
-    if (lowerMessage.includes('bank') || lowerMessage.includes('pankki') || lowerMessage.includes('account')) {
-      return `For business banking in Finland, here are your main options:\n\n**Traditional Banks:**\n- **OP Financial Group**: Finland's largest, excellent for SMEs\n- **Nordea**: Strong Nordic presence, good for international business\n- **Danske Bank**: Full-service banking\n\n**Digital Banking:**\n- **Holvi**: Perfect for freelancers and small businesses, includes invoicing and accounting tools\n\n**What you need to open an account:**\n- Business ID (Y-tunnus)\n- Proof of registration\n- Valid ID\n- Business plan\n\n${userIndustry === 'technology' || userIndustry === 'services' ? 'For online payments, consider Paytrail (Finnish payment gateway) or Stripe (international, great API).' : ''}\n\nWhich aspect of banking would you like to know more about?`;
-    }
-
-    // Insurance
-    if (lowerMessage.includes('insurance') || lowerMessage.includes('vakuutus') || lowerMessage.includes('yel')) {
-      return `Regarding business insurance:\n\n**Required:**\n- **YEL Insurance**: Mandatory for all entrepreneurs. Provides pension and disability coverage. About 24.1% of assessed income (minimum €8,575/year). Must arrange within 6 months of starting.\n- **Vehicle Insurance**: If you use vehicles (third-party minimum)\n\n**Highly Recommended:**\n- **Business Liability Insurance**: Protects against claims (€200-€2,000/year)\n- **Property Insurance**: Covers equipment and inventory (€300-€3,000/year)\n- **Professional Indemnity**: Essential for consultants and advisors (€500-€5,000/year)\n\n**Consider:**\n- Cyber insurance (increasingly important)\n- Key person insurance\n\nYes, you need YEL insurance even when just starting if you're working in your business! What specific insurance would you like to know more about?`;
-    }
-
-    // Timeline/steps
-    if (lowerMessage.includes('how long') || lowerMessage.includes('timeline') || lowerMessage.includes('when') || lowerMessage.includes('aikataulu')) {
-      return `Here's a typical timeline for starting a business in Finland:\n\n**Week 1-2:**\n- Finalize business plan\n- Choose business structure\n- Reserve company name (if applicable)\n\n**Week 2-4:**\n- Register with Trade Register (2-4 weeks processing)\n- Receive Business ID (Y-tunnus)\n- Arrange YEL insurance\n\n**Week 4-6:**\n- Open business bank account\n- Register for VAT (if applicable)\n- Apply for Prepayment Tax Register\n\n**Week 6-8:**\n- Apply for industry-specific permits\n- Set up accounting system\n- Arrange additional insurance\n\n**Week 8-12:**\n- Launch business operations\n- Start marketing\n- First customer engagements\n\nTotal time: 2-3 months on average. ${userStage === 'idea' ? 'Since you\'re in the idea stage, I recommend starting with the business plan and market research.' : ''}\n\nWhat specific step would you like guidance on?`;
-    }
-
-    // Default response
-    return `That's a great question, ${userName}! While I can provide general guidance on:\n\n- Funding options (Business Finland, TE grants, Finnvera, angel investors)\n- Taxation (VAT, income tax, YEL insurance)\n- Permits and licenses (Trade Register, industry-specific permits)\n- Business banking (OP, Nordea, Holvi)\n- Insurance requirements (YEL, liability, property)\n- Step-by-step startup process\n\nFor your specific question, I recommend:\n1. Checking the relevant module in the platform for detailed information\n2. Consulting with a business advisor (use our "Prepare for Meeting" tool)\n3. Visiting official resources like the Finnish Patent Office (PRH) or Tax Administration\n\nCould you rephrase your question or ask about a specific topic from the list above?`;
-  };
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -175,6 +123,12 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
     setIsTyping(true);
 
     try {
+      // Prepare conversation history for context
+      const conversationHistory = messages.map(msg => ({
+        role: msg.role,
+        content: msg.content
+      }));
+
       const response = await fetch(BACKEND_URL, {
         method: 'POST',
         headers: {
@@ -182,11 +136,10 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
         },
         body: JSON.stringify({
           user_prompt: userInput,
+          conversation_history: conversationHistory,
+          // user_profile: userProfile,
         }),
       });
-      console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
-      console.log('Response body:', await response.clone().text());
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
