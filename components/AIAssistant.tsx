@@ -7,7 +7,6 @@ import { Input } from './ui/input';
 import { Send, Bot, User, Sparkles} from 'lucide-react';
 import MarkdownRenderer from './MarkdownRenderer';
 
-const BACKEND_URL = 'http://127.0.0.1:8000/chat/prompt';
 
 interface AIAssistantProps {
   language: Language;
@@ -126,7 +125,8 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
         content: msg.content
       }));
 
-      const response = await fetch(BACKEND_URL, {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKENDURL || 'http://127.0.0.1:8000/chat/prompt';
+      const response = await fetch(backendUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
