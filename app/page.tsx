@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import React, { useState, useEffect, startTransition } from 'react';
@@ -315,37 +316,6 @@ export default function StartupGuide({
         <div className="absolute inset-0 overflow-hidden">
           <Particles />
         </div>
-
-        {/* Language Toggle */}
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="absolute top-8 right-8 z-20"
-        >
-          <div className="flex gap-2 bg-white/80 backdrop-blur-xl rounded-full p-1 shadow-lg border border-white/20">
-            <button
-              onClick={() => {}}
-              className={`px-4 py-2 rounded-full transition-all ${
-                language === 'en'
-                  ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              EN
-            </button>
-            <button
-              onClick={() => {}}
-              className={`px-4 py-2 rounded-full transition-all ${
-                language === 'fi'
-                  ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              FI
-            </button>
-          </div>
-        </motion.div>
-
         <div className="relative z-10">
           {/* Hero Section */}
           <div className="max-w-7xl mx-auto px-4 pt-32 pb-20">
@@ -356,18 +326,13 @@ export default function StartupGuide({
                 transition={{ duration: 0.6 }}
                 className="mb-8"
               >
-                <div className="inline-block mb-6">
-                  <div className="relative">
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                      className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full blur-2xl opacity-20"
+                <div className="w-full">
+                    <img
+                    src="/businessespoo.png"
+                    alt="Business Espoo"
+                    className="w-full object-cover max-h-20 md:h-[420px]"
                     />
-                    <div className="relative bg-gradient-to-r from-blue-600 to-cyan-600 p-6 rounded-3xl">
-                      <Rocket className="w-16 h-16 text-white" />
                     </div>
-                  </div>
-                </div>
                 <h1 className="text-6xl md:text-7xl font-bold mb-4">
                   <TextReveal className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
                     {t.hero.title}
@@ -399,70 +364,9 @@ export default function StartupGuide({
                     />
                   </motion.div>
                   </Link>
-                  <Link href="/register">
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="px-8 py-4 bg-white/80 backdrop-blur-xl text-slate-700 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all border-2 border-slate-200 hover:border-slate-300"
-                  >
-                    {t.hero.ctaAdvisor}
-                  </motion.div>
-                  </Link>
                 </div>
               </motion.div>
             </div>
-
-            {/* Features Grid */}
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.6 }}
-              className="mb-32"
-            >
-              <div className="text-center mb-16">
-                <h2 className="text-4xl font-bold text-slate-800 mb-4">
-                  {t.features.title}
-                </h2>
-                <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-                  {t.features.subtitle}
-                </p>
-              </div>
-
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {t.features.items.map((feature, index) => {
-                  const icons = [Zap, Target, Users, Globe, BookOpen, MessageSquare];
-                  const Icon = icons[index];
-                  const colors = [
-                    'from-blue-500 to-cyan-500',
-                    'from-green-500 to-emerald-500',
-                    'from-orange-500 to-amber-500',
-                    'from-indigo-500 to-blue-500',
-                    'from-teal-500 to-cyan-500',
-                    'from-blue-600 to-indigo-600',
-                  ];
-                  return (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.1 * index }}
-                      whileHover={{ y: -8 }}
-                      className="bg-white/70 backdrop-blur-xl rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all border border-white/20"
-                    >
-                      <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${colors[index]} mb-4`}>
-                        <Icon className="w-6 h-6 text-white" />
-                      </div>
-                      <h3 className="text-xl font-bold text-slate-800 mb-3">
-                        {feature.title}
-                      </h3>
-                      <p className="text-slate-600 leading-relaxed">
-                        {feature.description}
-                      </p>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </motion.div>
 
             {/* How It Works */}
             <motion.div

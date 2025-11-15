@@ -186,7 +186,7 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
   if (!isHydrated) return null;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
+    <div className="max-w-4xl mx-auto px-4 py-5">
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
@@ -267,7 +267,7 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
   <div className="p-4 border-t flex gap-2">
     <Input
       value={input}
-      label='Your message'
+      label={language === "fi" ? 'Viestisi' : "Your message"}
       onChange={(e) => setInput(e.target.value)}
       onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
       placeholder={t.placeholder}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Calendar } from 'lucide-react';
 import { Button } from './ui/button';
@@ -46,18 +46,19 @@ export default function Navigation({ language, onLanguageChange }: NavigationPro
       { id: "8", label: "Rahoitus & Käytännön järjestelyt", checked: false },
     ]
   };
-
-  const [checklist, setChecklist] = useState<ChecklistItem[]>(checklistTranslations[language]);
+  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+  const currentChecklist = checklistTranslations[language].map(item => ({
+    ...item,
+    checked: checkedItems[item.id] || false,
+  }));
   const [isChecklistDialogOpen, setChecklistDialogOpen] = useState(false);
   const [showAppointment, setShowAppointment] = useState(false);
 
   const handleChecklistToggle = (id: string) => {
-    setChecklist((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, checked: !item.checked } : item))
-    );
+    setCheckedItems(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const allChecked = checklist.every((item) => item.checked);
+  const allChecked = currentChecklist.every(item => item.checked);
 
   const [warningModal, setWarningModal] = useState(false);
 
@@ -79,7 +80,36 @@ export default function Navigation({ language, onLanguageChange }: NavigationPro
   };
 
   const closeAppointment = () => setShowAppointment(false);
-
+  const dialogTexts: Record<Language, { title: string; description: string }> = {
+    en: {
+      title: "Prepare and Book a Meeting",
+      description: "Before booking a meeting please make sure that you have drafted a business plan for most benefit",
+    },
+    fi: {
+      title: "Valmistele ja varaa tapaaminen",
+      description: "Ennen tapaamisen varaamista varmista, että olet laatinut liiketoimintasuunnitelman mahdollisimman hyödylliseksi",
+    },
+  };
+  const warningDialogTexts: Record<Language, {
+    title: string;
+    description: string;
+    yes: string;
+    no: string;
+  }> = {
+    en: {
+      title: "Incomplete Checklist",
+      description: "All steps of the business plan checklist are not yet checked. Do you still want to continue to booking?",
+      yes: "Yes",
+      no: "No",
+    },
+    fi: {
+      title: "Täydentämätön tarkistuslista",
+      description: "Kaikki liiketoimintasuunnitelman vaiheet eivät ole vielä tarkistettu. Haluatko silti jatkaa varaukseen?",
+      yes: "Kyllä",
+      no: "Ei",
+    },
+  };
+  
   return (
     <div className="bg-white shadow-sm border-b p-4 flex items-center justify-between">
       <div className="flex items-center gap-3">
@@ -113,34 +143,35 @@ export default function Navigation({ language, onLanguageChange }: NavigationPro
           </DialogTrigger>
 
           <DialogContent>
-            <DialogHeader>
-              <DialogTitle className="text-black">Prepare and Book a Meeting</DialogTitle>
-              <DialogDescription className="text-black">
-                Before booking a meeting please make sure that you have drafted a business plan for most benefit
-              </DialogDescription>
-            </DialogHeader>
+          <DialogHeader>
+  <DialogTitle className="text-black">{dialogTexts[language].title}</DialogTitle>
+  <DialogDescription className="text-black">{dialogTexts[language].description}</DialogDescription>
+</DialogHeader>
+
 
             <div className="mt-6 space-y-4">
-              <Card className="p-4">
-                <h3 className="mb-4">Things to consider for a business plan</h3>
-                <div className="space-y-3">
-                  {checklist.map((item) => (
-                    <div key={item.id} className="flex items-start space-x-3">
-                      <Checkbox
-                        id={item.id}
-                        checked={item.checked}
-                        onCheckedChange={() => handleChecklistToggle(item.id)}
-                      />
-                      <Label
-                        htmlFor={item.id}
-                        className={`cursor-pointer leading-relaxed ${item.checked ? 'line-through text-gray-500' : ''}`}
-                      >
-                        {item.label}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              </Card>
+            <Card key={language} className="p-4">
+  <h3 className="mb-4">Things to consider for a business plan</h3>
+  <div className="space-y-3">
+  {currentChecklist.map(item => (
+  <div key={item.id} className="flex items-start space-x-3">
+    <Checkbox
+      id={item.id}
+      checked={item.checked}
+      onCheckedChange={() => handleChecklistToggle(item.id)}
+    />
+    <Label
+      htmlFor={item.id}
+      className={`cursor-pointer leading-relaxed ${item.checked ? 'line-through text-gray-500' : ''}`}
+    >
+      {item.label}
+    </Label>
+  </div>
+))}
+
+  </div>
+</Card>
+
 
               <div className="pt-4">
               <button
@@ -160,19 +191,21 @@ export default function Navigation({ language, onLanguageChange }: NavigationPro
         {warningModal && typeof window !== 'undefined' &&
   createPortal(
     <Dialog open={true} onOpenChange={setWarningModal}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle className='text-black'>Incomplete Checklist</DialogTitle>
-          <DialogDescription>
-            All steps of the business plan checklist are not yet checked. Do you still want to continue to booking?
-          </DialogDescription>
-        </DialogHeader>
-        <div className="flex gap-3 justify-end mt-4">
-          <Button variant="outline" className="cursor-pointer" onClick={() => handleWarningResponse(false)}>No</Button>
-          <Button className="bg-indigo-600 hover:bg-indigo-700 cursor-pointer" onClick={() => handleWarningResponse(true)}>Yes</Button>
-        </div>
-      </DialogContent>
-    </Dialog>,
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle className='text-black'>{warningDialogTexts[language].title}</DialogTitle>
+      <DialogDescription>{warningDialogTexts[language].description}</DialogDescription>
+    </DialogHeader>
+    <div className="flex gap-3 justify-end mt-4">
+      <Button variant="outline" className="cursor-pointer" onClick={() => handleWarningResponse(false)}>
+        {warningDialogTexts[language].no}
+      </Button>
+      <Button className="bg-indigo-600 hover:bg-indigo-700 cursor-pointer" onClick={() => handleWarningResponse(true)}>
+        {warningDialogTexts[language].yes}
+      </Button>
+    </div>
+  </DialogContent>
+</Dialog>,
     document.body
   )
 }
@@ -180,7 +213,7 @@ export default function Navigation({ language, onLanguageChange }: NavigationPro
         {showAppointment && typeof window !== 'undefined' &&
   createPortal(
     <div className="fixed inset-0 z-[1000] flex items-start justify-center overflow-auto bg-black/50 p-8">
-      <div className="bg-white rounded-lg w-full max-w-4xl shadow-lg my-8">
+      <div className="bg-white rounded-lg w-full max-w-5xl shadow-lg my-8">
         <AppointmentBooking onBack={closeAppointment} />
       </div>
     </div>,
