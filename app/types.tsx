@@ -54,7 +54,7 @@ export interface Business {
 }
 
 export interface Appointment {
-  id: string;
+  _id: string;
   business: Business | string; // populated Business or ObjectId
   user: EspooUser | string; // populated user or ObjectId
   date: Date;

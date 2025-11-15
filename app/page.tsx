@@ -272,16 +272,11 @@ const translations = {
   }
 };
 
-export default function StartupGuide({ 
-  userProfile: userProfileProp = null, 
-  language = 'en', 
-  onSelectUserType
-}: StartupGuideProps) {
+export default function Page({}) {
   const { data: session } = useSession();
+  const [language, setLanguage] = useState<Language>('en');
   const t = translations[language];
-  const [mounted, setMounted] = useState(false);
-  const [showLanding, setShowLanding] = useState(!userProfileProp);
-
+  const [mounted, setMounted] = useState(false)
   const router = useRouter()
   
   useEffect(() => {
@@ -307,8 +302,6 @@ export default function StartupGuide({
   }
 
 
-  // Landing Page Component
-  if (showLanding) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 relative overflow-hidden">
         {/* Animated background */}
@@ -443,6 +436,5 @@ className="text-xl text-slate-600 max-w-3xl mx-auto mb-12"
         </div>
       </div>
     );
-  }
 
 }

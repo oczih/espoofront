@@ -152,7 +152,7 @@ export default function App() {
               {appointments
                 .filter(app => new Date(app.date) > new Date())
                 .map(app => (
-                  <li key={app.id} className="border border-gray-200 rounded-lg p-3 hover:bg-gray-50 transition">
+                  <li key={app._id} className="border border-gray-200 rounded-lg p-3 hover:bg-gray-50 transition">
                     <p className="text-sm text-gray-600">
                       {language === "fi" 
                         ? new Date(app.date).toLocaleDateString('fi-FI') + ' ' + new Date(app.date).toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' }) 
