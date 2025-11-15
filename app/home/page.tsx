@@ -77,7 +77,7 @@ export default function App() {
   };
 
   if (!mounted) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-
+  console.log(language)
   return (
     <div className="min-h-screen bg-gray-50">
       {needsModal && espooUser && <UserDataModal user={espooUser} onComplete={handleModalComplete} />}

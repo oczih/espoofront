@@ -65,7 +65,7 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-
+  const [newMessageId, setNewMessageId] = useState<string | null>(null);
   // Hydration and localStorage loading
   useEffect(() => {
     setIsHydrated(true);
@@ -105,7 +105,7 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
 
   const handleSend = async () => {
     if (!input.trim()) return;
-
+  
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
@@ -114,9 +114,11 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
     };
 
     setMessages(prev => [...prev, userMessage]);
+  setNewMessageId(userMessage.id); // mark as new
     const userInput = input;
     setInput('');
-    setIsTyping(true);
+  setIsTyping(true);
+
 
     try {
       // Prepare conversation history for context
@@ -145,11 +147,12 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: data.response || data.message || 'No response from server',
+        content: data.response || 'No response',
         timestamp: new Date(),
       };
 
       setMessages(prev => [...prev, assistantMessage]);
+      setNewMessageId(assistantMessage.id)
     } catch (error) {
       console.error('Error fetching AI response:', error);
       const errorMessage: Message = {
@@ -175,6 +178,7 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
       content: t.welcomeMessage,
       timestamp: new Date(),
     }]);
+    setInput('')
     localStorage.removeItem('aiMessages');
   };
 
@@ -195,102 +199,90 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
           </div>
           <button
             onClick={handleClearChat}
-            className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+            className="px-4 py-2 text-sm text-gray-600 cursor-pointer hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
           >
             {t.clearChat}
           </button>
         </div>
       </div>
 
-      <Card className="flex flex-col h-[600px]">
-        {/* Messages */}
-        <ScrollArea className="flex-1 p-6" ref={scrollRef}>
-          <div className="space-y-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                {message.role === 'assistant' && (
-                  <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Bot className="w-5 h-5 text-white" />
-                  </div>
-                )}
-                <div
-                  className={`max-w-[80%] rounded-lg p-4 ${
-                    message.role === 'user'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-900'
-                  }`}
-                >
-                  <p className="whitespace-pre-wrap">{message.content}</p>
-                  <p className={`text-xs mt-2 ${message.role === 'user' ? 'text-blue-100' : 'text-gray-500'}`}>
-                    {message.timestamp.toLocaleTimeString(language === 'fi' ? 'fi-FI' : 'en-US', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </p>
-                </div>
-                {message.role === 'user' && (
-                  <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
-                    <User className="w-5 h-5 text-gray-600" />
-                  </div>
-                )}
-              </div>
-            ))}
-            {isTyping && (
-              <div className="flex gap-3 justify-start">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Bot className="w-5 h-5 text-white" />
-                </div>
-                <div className="bg-gray-100 rounded-lg p-4">
-                  <p className="text-gray-600">{t.typing}</p>
-                </div>
-              </div>
-            )}
-          </div>
-        </ScrollArea>
-
-        {/* Suggestions */}
-        {messages.length <= 1 && (
-          <div className="px-6 py-3 border-t bg-gray-50">
-            <p className="text-gray-600 mb-2">{t.suggestions}</p>
-            <div className="flex flex-wrap gap-2">
-              {t.suggestedQuestions.map((question, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleSuggestion(question)}
-                  className="px-3 py-2 text-sm text-left bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-300 transition-colors"
-                >
-                  {question}
-                </button>
-              ))}
-            </div>
+      <Card className="flex flex-col h-[800px] max-h-[90vh]">
+  {/* Messages */}
+  <div
+    ref={scrollRef}
+    className="flex-1 overflow-y-auto p-6 space-y-4"
+  >
+{messages.map((message) => (
+  <div
+    key={message.id}
+    className={`flex gap-3 ${
+      message.role === 'user' ? 'justify-end' : 'justify-start'
+    } ${message.id === newMessageId ? 'animate-fade-in-up' : ''}`}
+  >
+        {message.role === 'assistant' && (
+          <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+            <Bot className="w-5 h-5 text-white" />
           </div>
         )}
-
-        {/* Input */}
-        <div className="p-4 border-t">
-          <div className="flex gap-2">
-            <Input
-              label=""
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-              placeholder={t.placeholder}
-              className="flex-1"
-            />
-            <button
-              onClick={handleSend}
-              disabled={!input.trim() || isTyping}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg transition-colors hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Send className="w-4 h-4" />
-              <span className="sr-only">{t.send}</span>
-            </button>
-          </div>
+        <div
+          className={`max-w-[80%] rounded-lg p-4 ${
+            message.role === 'user'
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-100 text-gray-900'
+          }`}
+        >
+          <p className="whitespace-pre-wrap">{message.content}</p>
+          <p className={`text-xs mt-2 ${
+            message.role === 'user' ? 'text-blue-100' : 'text-gray-500'
+          }`}>
+            {message.timestamp.toLocaleTimeString(
+              language === 'fi' ? 'fi-FI' : 'en-US',
+              { hour: '2-digit', minute: '2-digit' }
+            )}
+          </p>
         </div>
-      </Card>
+        {message.role === 'user' && (
+          <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
+            <User className="w-5 h-5 text-gray-600" />
+          </div>
+        )}
+      </div>
+    ))}
+    {isTyping && (
+      <div className="flex gap-3 justify-start">
+        <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+          <Bot className="w-5 h-5 text-white" />
+        </div>
+        <div className="bg-gray-100 rounded-lg p-4">
+          <p className="text-gray-600">
+            <span className="inline-block animate-pulse">{t.typing}</span>
+          </p>
+        </div>
+      </div>
+    )}
+  </div>
+
+  {/* Input */}
+  <div className="p-4 border-t flex gap-2">
+    <Input
+      value={input}
+      label='Your message'
+      onChange={(e) => setInput(e.target.value)}
+      onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
+      placeholder={t.placeholder}
+      className="flex-1"
+    />
+    <button
+      onClick={handleSend}
+      disabled={!input.trim() || isTyping}
+      className="px-4 py-2 bg-blue-600 text-white rounded-lg transition-colors cursor-pointer hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      <Send className="w-4 h-4" />
+      <span className="sr-only">{t.send}</span>
+    </button>
+  </div>
+</Card>
+
     </div>
   );
 }

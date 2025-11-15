@@ -24,14 +24,30 @@ interface NavigationProps {
 }
 
 export default function Navigation({ language, onLanguageChange }: NavigationProps) {
-  const initialChecklist: ChecklistItem[] = [
-    { id: 'market', label: 'Define target market', checked: false },
-    { id: 'finances', label: 'Prepare financial projections', checked: false },
-    { id: 'team', label: 'Assemble team and roles', checked: false },
-    { id: 'product', label: 'Clarify product/service offering', checked: false },
-  ];
+  const checklistTranslations: Record<Language, ChecklistItem[]> = {
+    en: [
+      { id: "1", label: "Business Idea", checked: false },
+      { id: "2", label: "Entrepreneur's Skills", checked: false },
+      { id: "3", label: "Products & Customers", checked: false },
+      { id: "4", label: "Marketing & Operations", checked: false },
+      { id: "5", label: "Competition & Operating Environment", checked: false },
+      { id: "6", label: "Vision & Future Plans", checked: false },
+      { id: "7", label: "Legal Requirements & Risks", checked: false },
+      { id: "8", label: "Finances & Practical Arrangements", checked: false },
+    ],
+    fi: [
+      { id: "1", label: "Liikeidea", checked: false },
+      { id: "2", label: "Yrittäjän taidot", checked: false },
+      { id: "3", label: "Tuotteet & Asiakkaat", checked: false },
+      { id: "4", label: "Markkinointi & Toiminta", checked: false },
+      { id: "5", label: "Kilpailu & Toimintaympäristö", checked: false },
+      { id: "6", label: "Visio & Tulevaisuuden suunnitelmat", checked: false },
+      { id: "7", label: "Lainsäädäntö & Riskit", checked: false },
+      { id: "8", label: "Rahoitus & Käytännön järjestelyt", checked: false },
+    ]
+  };
 
-  const [checklist, setChecklist] = useState<ChecklistItem[]>(initialChecklist);
+  const [checklist, setChecklist] = useState<ChecklistItem[]>(checklistTranslations[language]);
   const [isChecklistDialogOpen, setChecklistDialogOpen] = useState(false);
   const [showAppointment, setShowAppointment] = useState(false);
 
@@ -43,10 +59,23 @@ export default function Navigation({ language, onLanguageChange }: NavigationPro
 
   const allChecked = checklist.every((item) => item.checked);
 
+  const [warningModal, setWarningModal] = useState(false);
+
   const handleBookingClick = () => {
-    if (!allChecked) return;
+    if (!allChecked) {
+      setWarningModal(true); // show warning first
+      return;
+    }
     setChecklistDialogOpen(false);
     setShowAppointment(true);
+  };
+
+  const handleWarningResponse = (confirm: boolean) => {
+    setWarningModal(false);
+    if (confirm) {
+      setChecklistDialogOpen(false);
+      setShowAppointment(true);
+    }
   };
 
   const closeAppointment = () => setShowAppointment(false);
@@ -69,9 +98,10 @@ export default function Navigation({ language, onLanguageChange }: NavigationPro
             <SelectValue placeholder="Language" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="en">English</SelectItem>
-            <SelectItem value="fi">Suomi</SelectItem>
-            <SelectItem value="sv" className='disabled:hover:cursor-not-allowed' disabled={true}>Svenska</SelectItem>
+            <SelectItem value="en">In English</SelectItem>
+            <SelectItem value="fi">Suomeksi</SelectItem>
+            <SelectItem value="sv" className='disabled:hover:cursor-not-allowed' disabled={true}>På Svenska</SelectItem>
+            <SelectItem value="ru" className='disabled:hover:cursor-not-allowed' disabled={true}>На русском</SelectItem>
           </SelectContent>
         </Select>
 
@@ -115,9 +145,8 @@ export default function Navigation({ language, onLanguageChange }: NavigationPro
               <div className="pt-4">
               <button
   className={`w-full px-4 py-2 rounded-md text-white font-medium transition-colors
-    ${allChecked ? 'bg-indigo-600 hover:bg-indigo-700 cursor-pointer' : 'bg-indigo-300 cursor-not-allowed'}`}
+    ${allChecked ? 'bg-indigo-600 hover:bg-indigo-700 cursor-pointer' : 'bg-indigo-300'}`}
   onClick={handleBookingClick}
-  disabled={!allChecked}
 >
   Book Appointment
 </button> 
@@ -128,10 +157,30 @@ export default function Navigation({ language, onLanguageChange }: NavigationPro
         </Dialog>
 
         {/* Render AppointmentBooking via createPortal */}
+        {warningModal && typeof window !== 'undefined' &&
+  createPortal(
+    <Dialog open={true} onOpenChange={setWarningModal}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className='text-black'>Incomplete Checklist</DialogTitle>
+          <DialogDescription>
+            All steps of the business plan checklist are not yet checked. Do you still want to continue to booking?
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex gap-3 justify-end mt-4">
+          <Button variant="outline" className="cursor-pointer" onClick={() => handleWarningResponse(false)}>No</Button>
+          <Button className="bg-indigo-600 hover:bg-indigo-700 cursor-pointer" onClick={() => handleWarningResponse(true)}>Yes</Button>
+        </div>
+      </DialogContent>
+    </Dialog>,
+    document.body
+  )
+}
+
         {showAppointment && typeof window !== 'undefined' &&
   createPortal(
     <div className="fixed inset-0 z-[1000] flex items-start justify-center overflow-auto bg-black/50 p-8">
-      <div className="bg-white rounded-lg w-full max-w-3xl shadow-lg my-8">
+      <div className="bg-white rounded-lg w-full max-w-4xl shadow-lg my-8">
         <AppointmentBooking onBack={closeAppointment} />
       </div>
     </div>,

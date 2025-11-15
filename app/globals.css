@@ -190,7 +190,21 @@ body {
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 }
+@keyframes fadeText {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+.animate-text {
+  animation: fadeText 1s infinite;
+}
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
 
+.animate-fade-in-up {
+  animation: fadeInUp 0.3s ease-out;
+}
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
