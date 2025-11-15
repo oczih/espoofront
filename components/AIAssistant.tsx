@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import { UserProfile, Language } from '../app/types';
 import { Card } from './ui/card';
 import { Input } from './ui/input';
-import { Send, Bot, User } from 'lucide-react';
+import { Send, Bot, User, Sparkles} from 'lucide-react';
+import MarkdownRenderer from './MarkdownRenderer';
 
 const BACKEND_URL = 'http://127.0.0.1:8000/chat/prompt';
 
@@ -185,13 +186,22 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
   if (!isHydrated) return null;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-5">
+    <div className="max-w-4xl mx-auto px-4 py-12">
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
-            <button
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+              <Sparkles className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-gray-900">{t.title}</h1>
+              <p className="text-gray-600">{t.subtitle}</p>
+            </div>
+          </div>
+          <button
             onClick={handleClearChat}
-            className="px-4 py-2 text-sm text-gray-600 cursor-pointer hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors ml-auto"
-            >
+            className="px-4 py-2 text-sm text-gray-600 cursor-pointer hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+          >
             {t.clearChat}
           </button>
         </div>
@@ -222,7 +232,7 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
               : 'bg-gray-100 text-gray-900'
           }`}
         >
-          <p className="whitespace-pre-wrap">{message.content}</p>
+          <MarkdownRenderer content={message.content} className="whitespace-pre-wrap" />
           <p className={`text-xs mt-2 ${
             message.role === 'user' ? 'text-blue-100' : 'text-gray-500'
           }`}>
@@ -257,7 +267,7 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
   <div className="p-4 border-t flex gap-2">
     <Input
       value={input}
-      label={language === "fi" ? 'Viestisi' : "Your message"}
+      label='Your message'
       onChange={(e) => setInput(e.target.value)}
       onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
       placeholder={t.placeholder}
