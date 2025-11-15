@@ -8,6 +8,8 @@ import { Input } from './ui/input';
 import { ScrollArea } from './ui/scroll-area';
 import { Send, Bot, User, Sparkles } from 'lucide-react';
 
+const BACKEND_URL = 'http://127.0.0.1:8000/chat/prompt';
+
 interface AIAssistantProps {
   language: Language;
   userProfile: UserProfile | null;
@@ -168,22 +170,49 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const userInput = input;
     setInput('');
     setIsTyping(true);
 
-    // Simulate AI thinking
-    setTimeout(() => {
-      const response = generateResponse(input);
+    try {
+      const response = await fetch(BACKEND_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_prompt: userInput,
+        }),
+      });
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+      console.log('Response body:', await response.clone().text());
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: response,
+        content: data.response || data.message || 'No response from server',
         timestamp: new Date(),
       };
 
       setMessages(prev => [...prev, assistantMessage]);
+    } catch (error) {
+      console.error('Error fetching AI response:', error);
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: 'Sorry, I encountered an error connecting to the server. Please try again later.',
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsTyping(false);
-    }, 1000 + Math.random() * 1000);
+    }
   };
 
   const handleSuggestion = (question: string) => {
@@ -277,6 +306,7 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
         <div className="p-4 border-t">
           <div className="flex gap-2">
             <Input
+              label=""
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}

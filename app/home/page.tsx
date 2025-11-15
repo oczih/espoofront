@@ -18,7 +18,7 @@ import { UserType, Language, UserProfile } from '@/app/types';
 export type { UserType, Language, UserProfile };
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState('home');
+  const [currentPage, setCurrentPage] = useState('ai-assistant');
   const [userType, setUserType] = useState<UserType>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('userType');
