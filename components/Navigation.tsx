@@ -119,8 +119,8 @@ interface NavigationProps {
           <img src="/businessespoo_small.png" alt="Business Espoo logo" className="w-14 h-5 object-contain"/>
         </div>
         <div>
-          <h1 className="font-semibold font-bold text-black">Business Advisor AI</h1>
-          <p className="text-sm text-gray-600">Your entrepreneurial companion</p>
+          <h1 className="font-semibold font-bold text-black">{language === "fi" ? "Yritysneuvoja AI": "Business Advisor AI"}</h1>
+          <p className="text-sm text-gray-600">{language === "fi" ? "Yrittäjäkumppanisi" :"Your entrepreneurial companion"}</p>
         </div>
       </div>
       <div className="flex items-center gap-3">

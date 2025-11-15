@@ -4,8 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { UserProfile, Language } from '../app/types';
 import { Card } from './ui/card';
 import { Input } from './ui/input';
-import { ScrollArea } from './ui/scroll-area';
-import { Send, Bot, User, Sparkles } from 'lucide-react';
+import { Send, Bot, User } from 'lucide-react';
 
 const BACKEND_URL = 'http://127.0.0.1:8000/chat/prompt';
 
