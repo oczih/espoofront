@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { UserProfile, Language } from '../app/types';
 import { Card } from './ui/card';
-import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { ScrollArea } from './ui/scroll-area';
 import { Send, Bot, User, Sparkles } from 'lucide-react';
@@ -59,45 +58,40 @@ const translations = {
 
 export default function AIAssistant({ language, userProfile }: AIAssistantProps) {
   const t = translations[language];
-  const [messages, setMessages] = useState<Message[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('aiMessages');
-      if (saved) {
-        const parsed = JSON.parse(saved) as Message[];
-        return parsed.map((m: Message) => ({ ...m, timestamp: new Date(m.timestamp) }));
-      }
-    }
-    return [];
-  });
-  
-  const hasInitializedRef = useRef(false);
-  
-  // Initialize welcome message if messages are empty (only once)
-  // Using setTimeout to defer the state update avoids synchronous setState in effect
-  useEffect(() => {
-    if (!hasInitializedRef.current && messages.length === 0 && typeof window !== 'undefined') {
-      hasInitializedRef.current = true;
-      const timer = setTimeout(() => {
-        setMessages([{
-          id: '1',
-          role: 'assistant' as const,
-          content: t.welcomeMessage,
-          timestamp: new Date(),
-        }]);
-      }, 0);
-      return () => clearTimeout(timer);
-    }
-  }, [t.welcomeMessage, messages.length]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isHydrated, setIsHydrated] = useState(false);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Hydration and localStorage loading
   useEffect(() => {
-    // Save messages to localStorage
-    if (typeof window !== 'undefined' && messages.length > 0) {
+    setIsHydrated(true);
+    const saved = localStorage.getItem('aiMessages');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved) as Message[];
+        setMessages(parsed.map((m: Message) => ({ ...m, timestamp: new Date(m.timestamp) })));
+      } catch (error) {
+        console.error('Failed to load messages:', error);
+      }
+    } else {
+      // Add welcome message only if no saved messages
+      setMessages([{
+        id: '1',
+        role: 'assistant',
+        content: t.welcomeMessage,
+        timestamp: new Date(),
+      }]);
+    }
+  }, [t.welcomeMessage]);
+
+  // Save messages to localStorage
+  useEffect(() => {
+    if (isHydrated && messages.length > 0) {
       localStorage.setItem('aiMessages', JSON.stringify(messages));
     }
-  }, [messages]);
+  }, [messages, isHydrated]);
 
   useEffect(() => {
     // Scroll to bottom when messages change
@@ -137,7 +131,7 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
         body: JSON.stringify({
           user_prompt: userInput,
           conversation_history: conversationHistory,
-          // user_profile: userProfile,
+          user_profile: userProfile,
         }),
       });
 
@@ -171,6 +165,8 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
   const handleSuggestion = (question: string) => {
     setInput(question);
   };
+
+  if (!isHydrated) return null;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
@@ -243,10 +239,8 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
               {t.suggestedQuestions.map((question, index) => (
                 <button
                   key={index}
-                  
-                  
                   onClick={() => handleSuggestion(question)}
-                  className="text-left h-auto py-2"
+                  className="px-3 py-2 text-sm text-left bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-300 transition-colors"
                 >
                   {question}
                 </button>
@@ -262,14 +256,14 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
               label=""
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+              onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
               placeholder={t.placeholder}
               className="flex-1"
             />
             <button
               onClick={handleSend}
               disabled={!input.trim() || isTyping}
-              className="bg-blue-600 transition-colors hover:bg-blue-700"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg transition-colors hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Send className="w-4 h-4" />
               <span className="sr-only">{t.send}</span>
