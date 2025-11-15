@@ -37,7 +37,6 @@ const translations = {
     // Landing page
     hero: {
       title: 'Start Your Business Journey',
-      subtitle: 'in Espoo',
       description: 'Your digital guide to starting and growing a business in Finland. Get personalized guidance, navigate regulations, and connect with expert advisors.',
       ctaEntrepreneur: 'I\'m Starting a Business',
       ctaAdvisor: 'I\'m an Advisor',
@@ -326,23 +325,27 @@ export default function StartupGuide({
                 transition={{ duration: 0.6 }}
                 className="mb-8"
               >
-                <div className="w-full">
-                    <img
-                    src="/businessespoo.png"
-                    alt="Business Espoo"
-                    className="w-full object-cover max-h-20 md:h-[420px]"
-                    />
-                    </div>
+<div className="w-full max-w-4xl mx-auto pb-10">
+<img
+src="/businessespoo.png"
+alt="Business Espoo"
+className="w-full h-auto object-contain"
+/>
+</div>
                 <h1 className="text-6xl md:text-7xl font-bold mb-4">
                   <TextReveal className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
                     {t.hero.title}
                   </TextReveal>
                   <br />
-                  <TextReveal className="text-slate-800">{t.hero.subtitle}</TextReveal>
                 </h1>
-                <p className="text-xl text-slate-600 max-w-3xl mx-auto mb-12">
-                  {t.hero.description}
-                </p>
+                <motion.p
+initial={{ opacity: 0, y: 10 }}
+animate={{ opacity: 1, y: 0 }}
+transition={{ duration: 0.6, delay: 0.3 }}
+className="text-xl text-slate-600 max-w-3xl mx-auto mb-12"
+>
+{t.hero.description}
+</motion.p>
 
                 {/* CTA Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -413,44 +416,6 @@ export default function StartupGuide({
                 ))}
               </div>
             </motion.div>
-
-            {/* Stats Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.9, duration: 0.6 }}
-              className="mb-32"
-            >
-              <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-12 shadow-2xl border border-white/20">
-                <h2 className="text-3xl font-bold text-center text-slate-800 mb-12">
-                  {t.stats.title}
-                </h2>
-                <div className="grid md:grid-cols-4 gap-8">
-                  {[
-                    { value: '500+', label: t.stats.entrepreneurs },
-                    { value: '150+', label: t.stats.resources },
-                    { value: '2', label: t.stats.languages },
-                    { value: '95%', label: t.stats.satisfaction },
-                  ].map((stat, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ delay: 1 + 0.1 * index }}
-                      className="text-center"
-                    >
-                      <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-2">
-                        {stat.value}
-                      </div>
-                      <div className="text-slate-600 font-medium">
-                        {stat.label}
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-
             {/* Final CTA */}
             <motion.div
               initial={{ opacity: 0, y: 40 }}

@@ -21,24 +21,6 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
-    LinkedInProvider({
-        clientId: process.env.LINKEDIN_CLIENT_ID!,
-        clientSecret: process.env.LINKEDIN_CLIENT_SECRET!,
-        authorization: {
-          url: 'https://www.linkedin.com/oauth/v2/authorization',
-          params: {
-            scope: 'openid profile email',
-            response_type: 'code'
-          },
-        },
-        token: {
-          url: 'https://www.linkedin.com/oauth/v2/accessToken',
-        },
-        userinfo: {
-          url: 'https://api.linkedin.com/v2/userinfo',
-        },
-        idToken: true,
-      }),
   ],
   debug: process.env.NODE_ENV === 'development',
   session: {
@@ -47,8 +29,8 @@ export const authOptions: NextAuthOptions = {
     updateAge: 24 * 60 * 60,
   },
   pages: {
-    signIn: "/login",
-    error: "/login",
+    signIn: "/register",
+    error: "/",
   },
   callbacks: {
     async signIn({ user, account }) {

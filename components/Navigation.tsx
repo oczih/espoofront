@@ -11,6 +11,7 @@ import { Checkbox } from './ui/checkbox';
 import { Label } from './ui/label';
 import { AppointmentBooking } from './AppointmentBooking';
 import { Language } from '@/app/types';
+import { signOut } from 'next-auth/react';
 
 interface ChecklistItem {
   id: string;
@@ -121,8 +122,10 @@ export default function Navigation({ language, onLanguageChange }: NavigationPro
           <p className="text-sm text-gray-600">Your entrepreneurial companion</p>
         </div>
       </div>
-
       <div className="flex items-center gap-3">
+      <Button onClick={() => signOut()} className="bg-red-500 cursor-pointer transition-colorstext-white px-4 py-2 rounded hover:bg-red-600">
+          Sign out
+        </Button>
         <Select value={language} onValueChange={onLanguageChange}>
           <SelectTrigger className="w-[140px] text-black">
             <SelectValue placeholder="Language" />
