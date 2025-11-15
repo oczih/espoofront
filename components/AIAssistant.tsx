@@ -34,9 +34,9 @@ const translations = {
     suggestedQuestions: [
       'What funding options are available for technology startups?',
       'How do I register for VAT in Finland?',
-      'What permits do I need for a restaurant business?',
-      'Which bank is best for a small online business?',
+      'What different types of companies are there in Finland?',
       'Do I need YEL insurance if I\'m just starting?',
+      'What a business plan include and when do I need one?',
     ],
   },
   fi: {
