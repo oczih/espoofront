@@ -327,7 +327,7 @@ export default function StartupGuide({
               >
 <div className="w-full max-w-4xl mx-auto pb-10">
 <img
-src="/businesespoo.png"
+src="/businessespoo.png"
 alt="Business Espoo logo"
 className="w-full h-auto object-contain"
 />

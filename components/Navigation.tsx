@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Calendar } from 'lucide-react';
+import { Book, Calendar } from 'lucide-react';
 import { Button } from './ui/button';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from './ui/select';
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
@@ -25,29 +25,29 @@ interface NavigationProps {
   onLanguageChange: (lang: Language) => void; // <- use Language
 }
 
-export default function Navigation({ language, onLanguageChange }: NavigationProps) {
-  const checklistTranslations: Record<Language, ChecklistItem[]> = {
-    en: [
-      { id: "1", label: "Business Idea", checked: false },
-      { id: "2", label: "Entrepreneur's Skills", checked: false },
-      { id: "3", label: "Products & Customers", checked: false },
-      { id: "4", label: "Marketing & Operations", checked: false },
-      { id: "5", label: "Competition & Operating Environment", checked: false },
-      { id: "6", label: "Vision & Future Plans", checked: false },
-      { id: "7", label: "Legal Requirements & Risks", checked: false },
-      { id: "8", label: "Finances & Practical Arrangements", checked: false },
-    ],
-    fi: [
-      { id: "1", label: "Liikeidea", checked: false },
-      { id: "2", label: "Yrittäjän taidot", checked: false },
-      { id: "3", label: "Tuotteet & Asiakkaat", checked: false },
-      { id: "4", label: "Markkinointi & Toiminta", checked: false },
-      { id: "5", label: "Kilpailu & Toimintaympäristö", checked: false },
-      { id: "6", label: "Visio & Tulevaisuuden suunnitelmat", checked: false },
-      { id: "7", label: "Lainsäädäntö & Riskit", checked: false },
-      { id: "8", label: "Rahoitus & Käytännön järjestelyt", checked: false },
-    ]
-  };
+  export default function Navigation({ language, onLanguageChange }: NavigationProps) {
+    const checklistTranslations: Record<Language, ChecklistItem[]> = {
+      en: [
+        { id: "1", label: "Business Idea", checked: false },
+        { id: "2", label: "Entrepreneur's Skills", checked: false },
+        { id: "3", label: "Products & Customers", checked: false },
+        { id: "4", label: "Marketing & Operations", checked: false },
+        { id: "5", label: "Competition & Operating Environment", checked: false },
+        { id: "6", label: "Vision & Future Plans", checked: false },
+        { id: "7", label: "Legal Requirements & Risks", checked: false },
+        { id: "8", label: "Finances & Practical Arrangements", checked: false },
+      ],
+      fi: [
+        { id: "1", label: "Liikeidea", checked: false },
+        { id: "2", label: "Yrittäjän taidot", checked: false },
+        { id: "3", label: "Tuotteet & Asiakkaat", checked: false },
+        { id: "4", label: "Markkinointi & Toiminta", checked: false },
+        { id: "5", label: "Kilpailu & Toimintaympäristö", checked: false },
+        { id: "6", label: "Visio & Tulevaisuuden suunnitelmat", checked: false },
+        { id: "7", label: "Lainsäädäntö & Riskit", checked: false },
+        { id: "8", label: "Rahoitus & Käytännön järjestelyt", checked: false },
+      ]
+    };
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
   const currentChecklist = checklistTranslations[language].map(item => ({
     ...item,
@@ -125,7 +125,7 @@ export default function Navigation({ language, onLanguageChange }: NavigationPro
       </div>
       <div className="flex items-center gap-3">
       <Button onClick={() => signOut()} className="bg-red-500 cursor-pointer transition-colorstext-white px-4 py-2 rounded hover:bg-red-600">
-          Sign out
+          {language === "fi" ? "Kirjaudu ulos":"Sign out"}
         </Button>
         <Select value={language} onValueChange={onLanguageChange}>
           <SelectTrigger className="w-[140px] text-black">
@@ -141,9 +141,9 @@ export default function Navigation({ language, onLanguageChange }: NavigationPro
 
         <Dialog open={isChecklistDialogOpen} onOpenChange={setChecklistDialogOpen}>
           <DialogTrigger asChild>
-            <Button variant="default" className="bg-indigo-600 hover:bg-indigo-700">
+            <Button variant="default" className="bg-indigo-600 cursor-pointer hover:bg-indigo-700">
               <Calendar className="h-5 w-5 mr-2" />
-              Prepare & Book advisor meeting
+              {language === "fi" ? "Valmistele ja varaa neuvojan tapaaminen" : "Prepare & Book advisor meeting"}
             </Button>
           </DialogTrigger>
 
@@ -214,12 +214,11 @@ export default function Navigation({ language, onLanguageChange }: NavigationPro
     document.body
   )
 }
-
-        {showAppointment && typeof window !== 'undefined' &&
+{showAppointment && typeof window !== 'undefined' &&
   createPortal(
     <div className="fixed inset-0 z-[1000] flex items-start justify-center overflow-auto bg-black/50 p-8">
       <div className="bg-white rounded-lg w-full max-w-5xl shadow-lg my-8">
-        <AppointmentBooking onBack={closeAppointment} />
+        <AppointmentBooking onBack={closeAppointment} language={language} />
       </div>
     </div>,
     document.body

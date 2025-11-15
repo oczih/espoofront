@@ -4,6 +4,7 @@ import { Card } from "./ui/card";
 import { Label } from "./ui/label";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Calendar } from "./ui/calendar";
+import { enUS, fi } from 'date-fns/locale';
 import {
   MapPin,
   Video,
@@ -11,7 +12,6 @@ import {
   ArrowLeft,
   Check,
 } from "lucide-react";
-import { DayPicker } from "react-day-picker";
 import { useSession } from "next-auth/react";
 
 type MeetingType = "onsite" | "remote";
@@ -28,299 +28,249 @@ const timeSlots = [
 ];
 
 interface AppointmentBookingProps {
-  onBack?: () => void;
-}
+    onBack?: () => void;
+    language?: "en" | "fi";
+  }
 
-export function AppointmentBooking({
-  onBack,
-}: AppointmentBookingProps) {
-  const [selectedDate, setSelectedDate] = useState<
-    Date | undefined
-  >(undefined);
-  const [selectedTime, setSelectedTime] = useState("");
-  const [notes, setNotes] = useState("");
-  const [meetingType, setMeetingType] = useState("remote");
-  const [isBooked, setIsBooked] = useState(false);
-  const [uploadedFile, setUploadedFile] = useState<File | null>(
-    null,
-  );
-  const {data: session} = useSession();
-  const handleBooking = () => {
-    setIsBooked(true);
-  };
-
-  if (isBooked) {
+  export function AppointmentBooking({ onBack, language = "en" }: AppointmentBookingProps) {
+    const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+    const [selectedTime, setSelectedTime] = useState("");
+    const [notes, setNotes] = useState("");
+    const [meetingType, setMeetingType] = useState<MeetingType>("remote");
+    const [isBooked, setIsBooked] = useState(false);
+    const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+    const [loading, setLoading] = useState(false)
+    const { data: session } = useSession();
+    
+    const t = {
+      en: {
+        back: "Back to Chat",
+        title: "Book an Appointment",
+        description: "Schedule a 1-hour consultation with our business advisor",
+        meetingType: "Meeting Type",
+        remote: "Remote Meeting",
+        onsite: "On-site at Otaniemi",
+        remoteDesc: "Join via video call from anywhere",
+        onsiteDesc: "Meet in person at our Otaniemi office",
+        durationInfo: "All meetings are scheduled for 1 hour",
+        selectTime: "Select Time",
+        additionalInfo: "Additional Information",
+        notesPlaceholder: "Any specific topics you'd like to discuss?",
+        upload: "Upload Business Plan",
+        uploadDesc: "Business Plan (Optional)",
+        uploadFormats: "Accepted formats: PDF, DOC, DOCX",
+        confirm: "Confirm Appointment",
+        cancel: "Cancel Appointment",
+        confirmed: "Appointment Confirmed!",
+        typeLabel: "Type:",
+        durationLabel: "Duration:",
+        confirmationSent: "Confirmation sent to:",
+        reminder: "A reminder about this meeting will be sent to your phone number and email."
+      },
+      fi: {
+        back: "Takaisin keskusteluun",
+        title: "Varaa tapaaminen",
+        description: "Aikatauluta yhden (1) tunnin konsultaatio liikeneuvojamme kanssa",
+        meetingType: "Tapaamisen tyyppi",
+        remote: "Etätapaaminen",
+        onsite: "Paikan päällä Otaniemessä",
+        remoteDesc: "Osallistu videopuheluun mistä tahansa",
+        onsiteDesc: "Tapaa henkilökohtaisesti Otaniemen toimistolla",
+        durationInfo: "Kaikki tapaamiset kestävät yhden (1) tunnin",
+        selectTime: "Valitse aika",
+        additionalInfo: "Lisätiedot",
+        notesPlaceholder: "Onko jotain erityisiä aiheita, joista haluat keskustella?",
+        upload: "Lataa liiketoimintasuunnitelma",
+        uploadDesc: "Liiketoimintasuunnitelma (valinnainen)",
+        uploadFormats: "Hyväksytyt muodot: PDF, DOC, DOCX",
+        confirm: "Vahvista tapaaminen",
+        cancel: "Peruuta tapaaminen",
+        confirmed: "Tapaaminen vahvistettu!",
+        typeLabel: "Tyyppi:",
+        durationLabel: "Kesto:",
+        confirmationSent: "Vahvistus lähetetty:",
+        reminder: "Muistutus tästä tapaamisesta lähetetään puhelimeesi ja sähköpostiisi."
+      }
+    }[language];
+    
+    const handleBooking = async () => {
+        if (!selectedDate || !selectedTime) return;
+        const businessId = session?.user?.business?.toString();
+        const dateTime = new Date(selectedDate);
+        const [hours, minutes] = selectedTime.split(":").map(Number);
+        dateTime.setHours(hours, minutes);
+        setLoading(true)
+        try {
+          const res = await fetch("/api/appointments", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              businessId: businessId,
+              date: dateTime,
+              notes,
+            }),
+          });
+      
+          if (!res.ok) throw new Error("Failed to book appointment");
+      
+          setIsBooked(true);
+        } catch (err) {
+          console.error(err);
+          alert("Failed to book appointment");
+        } finally{
+            setLoading(false)
+        }
+      };
+      
+      if (isBooked) {
+        return (
+          <div className="min-h-screen flex items-center rounded-2xl justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
+            <div className="max-w-2xl w-full">
+              {onBack && (
+                <Button
+                  variant="ghost"
+                  onClick={onBack}
+                  className="mb-6 flex items-center cursor-pointer gap-2 text-gray-800 hover:text-gray-900"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  {t.back}
+                </Button>
+              )}
+              <Card className="p-8 rounded-2xl shadow-lg text-center border border-gray-200">
+                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Check className="w-10 h-10 text-green-600" />
+                </div>
+                <h2 className="mb-4 text-2xl font-semibold text-gray-900">{t.confirmed}</h2>
+                <p className="text-gray-700 mb-6">
+                  {meetingType === "onsite" ? t.onsite : t.remote} <span className="font-medium">{t.durationLabel.toLowerCase()}</span> {" "}
+                  {selectedDate?.toLocaleDateString("fi-FI", { day: "2-digit", month: "2-digit", year: "numeric" })} <span className="font-medium">{t.selectTime.toLowerCase()}</span> {selectedTime}.
+                </p>
+                <div className="bg-gray-50 rounded-lg p-5 mb-6 text-left border border-gray-200">
+                  <p className="text-sm mb-2">
+                    <span className="text-gray-500">{t.typeLabel}</span> <strong>{meetingType === "onsite" ? t.onsite : t.remote}</strong>
+                  </p>
+                  <p className="text-sm mb-2">
+                    <span className="text-gray-500">{t.durationLabel}</span> <strong>1 hour</strong>
+                  </p>
+                  <p className="text-sm">
+                    <span className="text-gray-500">{t.confirmationSent}</span> <strong>{session?.user.email}{session?.user.number ? ` • ${session.user.number}` : ""}</strong>
+                  </p>
+                </div>
+                <p className="text-sm text-gray-600 mb-6">{t.reminder}</p>
+                <Button
+                  className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl shadow-md"
+                  onClick={() => setIsBooked(false)}
+                >
+                  {t.cancel}
+                </Button>
+              </Card>
+            </div>
+          </div>
+        );
+      }      
+  
     return (
-        <div className="min-h-screen rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
-        <div className="max-w-2xl mx-auto py-8">
+      <div className="min-h-screen rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-100 px-1">
+        <div className="max-w-4xl mx-auto py-8">
           {onBack && (
-            <Button
-              variant="ghost"
-              onClick={onBack}
-              className="mb-4 cursor-pointer text-black"
-            >
+            <Button variant="ghost" onClick={onBack} className="mb-4 text-black cursor-pointer">
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Chat
+              {t.back}
             </Button>
           )}
-
-          <Card className="p-8 text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Check className="w-8 h-8 text-green-600" />
+          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h1 className="mb-2 text-black">{t.title}</h1>
+            <p className="text-gray-600">{t.description}</p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-6">
+              <Card className="p-6">
+                <h3 className="mb-4">{t.meetingType}</h3>
+                <RadioGroup value={meetingType} onValueChange={v => setMeetingType(v as MeetingType)}>
+                  <div className="space-y-3">
+                    <div className={`flex items-start space-x-3 p-4 rounded-lg border-2 cursor-pointer transition-colors ${meetingType === "remote" ? "border-indigo-600 bg-indigo-50" : "border-gray-200"}`} onClick={() => setMeetingType("remote")}>
+                      <RadioGroupItem value="remote" id="remote" />
+                      <div className="flex-1">
+                        <Label htmlFor="remote" className="cursor-pointer flex items-center gap-2">
+                          <Video className="w-5 h-5 text-indigo-600" />
+                          <span>{t.remote}</span>
+                        </Label>
+                        <p className="text-sm text-gray-600 mt-1">{t.remoteDesc}</p>
+                      </div>
+                    </div>
+                    <div className={`flex items-start space-x-3 p-4 rounded-lg border-2 cursor-pointer transition-colors ${meetingType === "onsite" ? "border-indigo-600 bg-indigo-50" : "border-gray-200"}`} onClick={() => setMeetingType("onsite")}>
+                      <RadioGroupItem value="onsite" id="onsite" />
+                      <div className="flex-1">
+                        <Label htmlFor="onsite" className="cursor-pointer flex items-center gap-2">
+                          <MapPin className="w-5 h-5 text-indigo-600" />
+                          <span>{t.onsite}</span>
+                        </Label>
+                        <p className="text-sm text-gray-600 mt-1">{t.onsiteDesc}</p>
+                      </div>
+                    </div>
+                  </div>
+                </RadioGroup>
+                <div className="mt-4 p-3 bg-blue-50 rounded-lg flex items-start gap-2">
+                  <Clock className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <p className="text-sm text-blue-900">{t.durationInfo}</p>
+                </div>
+              </Card>
+              <Card className="p-4 mb-4">
+              <h3 className="mb-2 text-sm font-medium text-gray-700">
+                {language === "fi" ? "Valittu päivä" : "Selected Date"}
+                </h3>
+                <p className="text-black">
+                {selectedDate
+                    ? selectedDate.toLocaleDateString("fi-FI", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                    })
+                    : language === "fi"
+                    ? "Ei valittua päivää"
+                    : "No date selected"}
+                </p>
+                </Card>
+                <div className="w-sm max-w-xl text-black">
+            <Calendar
+            mode="single"
+            selected={selectedDate}
+            onSelect={setSelectedDate}
+            className="rounded-lg border w-full"
+            locale={language === "fi" ? fi : enUS}
+        />
+        </div>
             </div>
-            <h2 className="mb-2 text-black">Appointment Confirmed!</h2>
-            <p className="text-gray-600 mb-6">
-              Your{" "}
-              {meetingType === "onsite" ? "on-site" : "remote"}{" "}
-              meeting has been scheduled for{" "}
-              {selectedDate?.toLocaleDateString()} at{" "}
-              {selectedTime}.
-            </p>
-            <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left">
-              <p className="text-sm mb-2">
-                <span className="text-gray-600">Type:</span>{" "}
-                <strong>
-                  {meetingType === "onsite"
-                    ? "On-site at Otaniemi"
-                    : "Remote Meeting"}
-                </strong>
-              </p>
-              <p className="text-sm mb-2">
-                <span className="text-gray-600">Duration:</span>{" "}
-                <strong>1 hour</strong>
-              </p>
-              <p className="text-sm">
-                <span className="text-gray-600">
-                  Confirmation sent to:
-                </span>{" "}
-                <strong>
-                 {session?.user.email} and {session?.user.number}
-                </strong>
-              </p>
+            <div className="space-y-6">
+              <Card className="p-6">
+                <h3 className="mb-4">{t.selectTime}</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  {timeSlots.map(time => (
+                    <Button key={time} variant={selectedTime === time ? "default" : "outline"} className={selectedTime === time ? "bg-indigo-600 hover:bg-indigo-700" : "cursor-pointer"} onClick={() => setSelectedTime(time)}>
+                      {time}
+                    </Button>
+                  ))}
+                </div>
+              </Card>
+              <Card className="p-6">
+                <h3 className="mb-4">{t.additionalInfo}</h3>
+                <Label htmlFor="notes">{t.notesPlaceholder}</Label>
+                <textarea id="notes" value={notes} onChange={e => setNotes(e.target.value)} className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 mt-1" rows={3}   />
+              </Card>
+              <Card className="p-6">
+                <h3 className="mb-4">{t.upload}</h3>
+                <Label htmlFor="business-plan">{t.uploadDesc}</Label>
+                <input id="business-plan" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={e => setUploadedFile(e.target.files?.[0] || null)} className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                {uploadedFile && <p className="text-sm text-green-600 mt-2">✓ {uploadedFile.name} uploaded</p>}
+                <p className="text-xs text-gray-500 mt-1">{t.uploadFormats}</p>
+              </Card>
+              <Button className="w-full bg-indigo-600 hover:bg-indigo-700" onClick={handleBooking} disabled={!selectedDate || !selectedTime || loading}>
+                {t.confirm}
+              </Button>
             </div>
-            <p className="text-sm text-gray-600 mb-4">
-              A reminder about this meeting will be sent to your
-              phone number and email.
-            </p>
-            <Button
-              className="w-full bg-red-600 hover:bg-red-700"
-              onClick={() => setIsBooked(false)}
-            >
-              Cancel Appointment
-            </Button>
-          </Card>
+          </div>
         </div>
       </div>
     );
   }
-
-  return (
-    <div className="min-h-screen rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-100 px-1">
-      <div className="max-w-4xl mx-auto py-8">
-        {onBack && (
-          <Button
-            variant="ghost"
-            onClick={onBack}
-            className="mb-4 text-black cursor-pointer"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Chat
-          </Button>
-        )}
-
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <h1 className="mb-2 text-black">Book an Appointment</h1>
-          <p className="text-gray-600">
-            Schedule a 1-hour consultation with our business
-            advisor
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Left Column */}
-          <div className="space-y-6">
-            {/* Meeting Type */}
-            <Card className="p-6">
-              <h3 className="mb-4">Meeting Type</h3>
-              <RadioGroup
-                value={meetingType}
-                onValueChange={(value) =>
-                  setMeetingType(value as MeetingType)
-                }
-              >
-                <div className="space-y-3">
-                  <div
-                    className={`flex items-start space-x-3 p-4 rounded-lg border-2 cursor-pointer transition-colors ${
-                      meetingType === "remote"
-                        ? "border-indigo-600 bg-indigo-50"
-                        : "border-gray-200"
-                    }`}
-                    onClick={() => setMeetingType("remote")}
-                  >
-                    <RadioGroupItem
-                      value="remote"
-                      id="remote"
-                    />
-                    <div className="flex-1">
-                      <Label
-                        htmlFor="remote"
-                        className="cursor-pointer flex items-center gap-2"
-                      >
-                        <Video className="w-5 h-5 text-indigo-600" />
-                        <span>Remote Meeting</span>
-                      </Label>
-                      <p className="text-sm text-gray-600 mt-1">
-                        Join via video call from anywhere
-                      </p>
-                    </div>
-                  </div>
-
-                  <div
-                    className={`flex items-start space-x-3 p-4 rounded-lg border-2 cursor-pointer transition-colors ${
-                      meetingType === "onsite"
-                        ? "border-indigo-600 bg-indigo-50"
-                        : "border-gray-200"
-                    }`}
-                    onClick={() => setMeetingType("onsite")}
-                  >
-                    <RadioGroupItem
-                      value="onsite"
-                      id="onsite"
-                    />
-                    <div className="flex-1">
-                      <Label
-                        htmlFor="onsite"
-                        className="cursor-pointer flex items-center gap-2"
-                      >
-                        <MapPin className="w-5 h-5 text-indigo-600" />
-                        <span>On-site at Otaniemi</span>
-                      </Label>
-                      <p className="text-sm text-gray-600 mt-1">
-                        Meet in person at our Otaniemi office
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </RadioGroup>
-
-              <div className="mt-4 p-3 bg-blue-50 rounded-lg flex items-start gap-2">
-                <Clock className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-blue-900">
-                  All meetings are scheduled for 1 hour
-                </p>
-              </div>
-            </Card>
-
-            {/* Date Selection */}
-            <DayPicker
-  mode="single"
-  selected={selectedDate}
-  onSelect={setSelectedDate}
-  className="p-3 rounded-md border bg-white shadow-sm text-black"
-  showOutsideDays
-  classNames={{
-    months: "flex flex-col sm:flex-row gap-2",
-    month: "flex flex-col gap-4",
-    caption: "flex justify-between items-center px-2 py-1 text-black",
-    caption_label: "text-sm font-medium text-black",
-    nav_button_previous: "p-1 rounded hover:bg-gray-100 text-black",
-    nav_button_next: "p-1 rounded hover:bg-gray-100 text-black",
-    table: "w-full border-collapse text-black",
-    head_cell: "text-xs text-black",
-    day: "text-sm p-2 rounded hover:bg-indigo-50 text-black",
-    day_selected: "bg-indigo-600 text-white",
-    day_today: "border border-indigo-400 text-black",
-    day_disabled: "text-gray-300 opacity-50 cursor-not-allowed",
-  }}
-/>
-
-          </div>
-
-          {/* Right Column */}
-          <div className="space-y-6">
-            {/* Time Selection */}
-            <Card className="p-6">
-              <h3 className="mb-4">Select Time</h3>
-              <div className="grid grid-cols-2 gap-2">
-                {timeSlots.map((time) => (
-                  <Button
-                    key={time}
-                    variant={
-                      selectedTime === time
-                        ? "default" 
-                        : "outline"
-                    }
-                    className={
-                      selectedTime === time
-                        ? "bg-indigo-600 hover:bg-indigo-700"
-                        : "cursor-pointer"
-                    }
-                    onClick={() => setSelectedTime(time)}
-                  >
-                    {time}
-                  </Button>
-                ))}
-              </div>
-            </Card>
-
-            {/* Additional Information */}
-            <Card className="p-6">
-              <h3 className="mb-4">Additional Information</h3>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="notes">
-                    Additional Notes (Optional)
-                  </Label>
-                  <textarea
-                    id="notes"
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 mt-1"
-                    rows={3}
-                    placeholder="Any specific topics you'd like to discuss?"
-                  />
-                </div>
-              </div>
-            </Card>
-
-            {/* Business Plan Upload */}
-            <Card className="p-6">
-              <h3 className="mb-4">Upload Business Plan</h3>
-              <div className="space-y-2">
-                <Label htmlFor="business-plan">
-                  Business Plan (Optional)
-                </Label>
-                <input
-                  id="business-plan"
-                  type="file"
-                  accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                  onChange={(e) =>
-                    setUploadedFile(e.target.files?.[0] || null)
-                  }
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                {uploadedFile && (
-                  <p className="text-sm text-green-600 mt-2">
-                    ✓ {uploadedFile.name} uploaded
-                  </p>
-                )}
-                <p className="text-xs text-gray-500 mt-1">
-                  Accepted formats: PDF, DOC, DOCX
-                </p>
-              </div>
-            </Card>
-
-            {/* Book Button */}
-            <Button
-              className="w-full bg-indigo-600 hover:bg-indigo-700"
-              onClick={handleBooking}
-              disabled={!selectedDate || !selectedTime}
-            >
-              Confirm Appointment
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+  

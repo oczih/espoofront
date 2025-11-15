@@ -265,7 +265,7 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
       className="flex-1"
     />
     <button
-      onClick={handleSend}
+      onClick={() => handleSend()}
       disabled={!input.trim() || isTyping}
       className="px-4 py-2 bg-blue-600 text-white rounded-lg transition-colors cursor-pointer hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
     >
