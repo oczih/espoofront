@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -114,8 +115,8 @@ export default function Navigation({ language, onLanguageChange }: NavigationPro
   return (
     <div className="bg-white shadow-sm border-b p-4 flex items-center justify-between">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
-          <img src="/businesespoo.png"/>
+        <div className="w-16 h-6 rounded-lg flex items-center justify-center">
+          <img src="/businessespoo_small.png" alt="Business Espoo logo" className="w-14 h-5 object-contain"/>
         </div>
         <div>
           <h1 className="font-semibold font-bold text-black">Business Advisor AI</h1>
