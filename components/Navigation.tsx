@@ -140,8 +140,9 @@ export default function Navigation({ language, onLanguageChange }: NavigationPro
 
         <Dialog open={isChecklistDialogOpen} onOpenChange={setChecklistDialogOpen}>
           <DialogTrigger asChild>
-            <Button variant="default" size="icon" className="bg-indigo-600 hover:bg-indigo-700">
-              <Calendar className="h-5 w-5" />
+            <Button variant="default" className="bg-indigo-600 hover:bg-indigo-700">
+              <Calendar className="h-5 w-5 mr-2" />
+              Prepare & Book advisor meeting
             </Button>
           </DialogTrigger>
 
