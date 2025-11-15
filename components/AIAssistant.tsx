@@ -36,7 +36,7 @@ const translations = {
       'How do I register for VAT in Finland?',
       'What different types of companies are there in Finland?',
       'Do I need YEL insurance if I\'m just starting?',
-      'What a business plan include and when do I need one?',
+      'What does a business plan include?'
     ],
   },
   fi: {
@@ -262,6 +262,24 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
       </div>
     )}
   </div>
+
+    {/* Suggestions */}
+  {messages.length <= 1 && (
+    <div className="px-6 py-3 border-t bg-gray-50">
+      <p className="text-gray-600 mb-2">{t.suggestions}</p>
+      <div className="flex flex-wrap gap-2">
+        {t.suggestedQuestions.map((question, index) => (
+          <button
+            key={index}
+            onClick={() => handleSuggestion(question)}
+            className="px-3 py-2 text-sm text-left bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-300 transition-colors"
+          >
+            {question}
+          </button>
+        ))}
+      </div>
+    </div>
+  )}
 
   {/* Input */}
   <div className="p-4 border-t flex gap-2">
