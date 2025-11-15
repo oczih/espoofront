@@ -52,7 +52,7 @@ export const Input = ({
         initial="initial"
         animate={showLabel ? "animate" : "initial"}
       >
-        {label.split("").map((char, index) => (
+        {(label || "").split("").map((char, index) => (
           <motion.span
             key={index}
             className="inline-block text-sm"
