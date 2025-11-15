@@ -300,7 +300,7 @@ export default function ResourceLibrary({ language }: ResourceLibraryProps) {
       {/* Resources Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {filteredResources.map((resource) => (
-          <Card key={resource.id} className="p-6 hover:shadow-lg transition-shadow">
+          <Card key={resource.id} className="p-6 transition-colors hover:shadow-lg transition-shadow">
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0 mt-1">
                 {getTypeIcon(resource.type)}

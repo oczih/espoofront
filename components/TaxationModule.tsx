@@ -171,7 +171,7 @@ export default function TaxationModule({ language, userProfile, onProfileUpdate 
             <button
               onClick={handleMarkComplete}
               disabled={isModuleComplete}
-              className="ml-4 bg-blue-600 hover:bg-blue-700"
+              className="ml-4 bg-blue-600 transition-colors hover:bg-blue-700"
             >
               {isModuleComplete ? (
                 <>
@@ -192,7 +192,7 @@ export default function TaxationModule({ language, userProfile, onProfileUpdate 
             const Icon = tax.icon;
             return (
               <AccordionItem key={tax.id} value={tax.id} className="border rounded-lg px-6 bg-white">
-                <AccordionTrigger className="hover:no-underline">
+                <AccordionTrigger className="transition-colors hover:no-underline">
                   <div className="flex items-center gap-4 text-left">
                     <Icon className="w-6 h-6 text-blue-600 flex-shrink-0" />
                     <div>

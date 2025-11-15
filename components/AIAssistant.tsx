@@ -286,7 +286,7 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
             <button
               onClick={handleSend}
               disabled={!input.trim() || isTyping}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-blue-600 transition-colors hover:bg-blue-700"
             >
               <Send className="w-4 h-4" />
               <span className="sr-only">{t.send}</span>

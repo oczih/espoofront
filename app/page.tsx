@@ -1,139 +1,579 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Navigation from '../components/Navigation';
-import LandingPage from '../components/LandingPage';
-import StartupGuide from '../components/StartupGuide';
-import FundingModule from '../components/FundingModule';
-import TaxationModule from '../components/TaxationModule';
-import PermitsModule from '../components/PermitsModule';
-import BankingModule from '../components/BankingModule';
-import InsuranceModule from '../components/InsuranceModule';
-import AIAssistant from '../components/AIAssistant';
-import PreMeetingPrep from '../components/PreMeetingPrep';
-import AdvisorDashboard from '../components/AdvisorDashboard';
-import ResourceLibrary from '../components/ResourceLibrary';
-import { UserType, Language, UserProfile } from './types';
+import React, { useState, useEffect, startTransition } from 'react';
+import { motion } from 'framer-motion';
+import { CheckCircle2,  ArrowRight,  Briefcase, Sparkles, TrendingUp, FileText, Shield, Building2, Rocket, Globe, MessageSquare, BookOpen, Users, Zap, Target, Award, ChevronRight, Play } from 'lucide-react';
+import { TextReveal } from '@/components/ui/text-reveal';
+import Particles from '@/components/particles';
+import { useRouter } from 'next/navigation';
+import { useSession} from "next-auth/react";
+import Link from 'next/link';
+type Language = 'en' | 'fi';
 
-export type { UserType, Language, UserProfile };
+type BusinessStage = 'idea' | 'planning' | 'registered' | 'operating';
 
-export default function App() {
-  const [currentPage, setCurrentPage] = useState('home');
-  const [userType, setUserType] = useState<UserType>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('userType');
-      return saved ? (saved as UserType) : null;
-    }
-    return null;
-  });
-  const [language, setLanguage] = useState<Language>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('language');
-      return saved ? (saved as Language) : 'en';
-    }
-    return 'en';
-  });
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('userProfile');
-      return saved ? JSON.parse(saved) : null;
-    }
-    return null;
-  });
+type UserType = 'entrepreneur' | 'advisor' | null;
 
-  // Save user data to localStorage
+interface UserProfile {
+  name: string;
+  businessStage: BusinessStage;
+  industry: string;
+  language: Language;
+  completedSteps: string[];
+  notes: string;
+}
+
+interface StartupGuideProps {
+  userProfile?: UserProfile | null;
+  onProfileUpdate?: (profile: UserProfile) => void;
+  language?: Language;
+  onNavigate?: (page: string) => void;
+  onSelectUserType?: (type: UserType) => void;
+}
+
+const translations = {
+  en: {
+    // Landing page
+    hero: {
+      title: 'Start Your Business Journey',
+      subtitle: 'in Espoo',
+      description: 'Your digital guide to starting and growing a business in Finland. Get personalized guidance, navigate regulations, and connect with expert advisors.',
+      ctaEntrepreneur: 'I\'m Starting a Business',
+      ctaAdvisor: 'I\'m an Advisor',
+      watchDemo: 'Watch Demo',
+    },
+    features: {
+      title: 'Everything You Need to Succeed',
+      subtitle: 'Comprehensive tools and guidance for your entrepreneurial journey',
+      items: [
+        {
+          title: 'AI-Powered Guidance',
+          description: 'Get instant answers to your business questions with our intelligent assistant',
+        },
+        {
+          title: 'Step-by-Step Roadmap',
+          description: 'Follow a personalized path from idea to launch with clear milestones',
+        },
+        {
+          title: 'Expert Support',
+          description: 'Connect with Espoo business advisors who understand your needs',
+        },
+        {
+          title: 'Multilingual Support',
+          description: 'Access all content in English or Finnish for seamless understanding',
+        },
+        {
+          title: 'Real-Time Resources',
+          description: 'Access up-to-date information on permits, funding, and regulations',
+        },
+        {
+          title: 'Pre-Meeting Prep',
+          description: 'Prepare for advisor meetings with guided preparation tools',
+        },
+      ],
+    },
+    howItWorks: {
+      title: 'How It Works',
+      subtitle: 'Your journey from idea to successful business in three simple steps',
+      steps: [
+        {
+          title: 'Create Your Profile',
+          description: 'Tell us about your business idea and where you are in your journey',
+        },
+        {
+          title: 'Follow Your Roadmap',
+          description: 'Get personalized guidance through funding, taxation, permits, and more',
+        },
+        {
+          title: 'Launch & Grow',
+          description: 'Access ongoing support and resources as your business grows',
+        },
+      ],
+    },
+    stats: {
+      title: 'Join Espoo\'s Thriving Business Community',
+      entrepreneurs: 'Entrepreneurs Supported',
+      resources: 'Resources Available',
+      languages: 'Languages Supported',
+      satisfaction: 'Satisfaction Rate',
+    },
+    cta: {
+      title: 'Ready to Start Your Journey?',
+      description: 'Join hundreds of entrepreneurs who have successfully launched their businesses with our platform',
+      button: 'Get Started Free',
+    },
+    // Original translations
+    welcome: 'Welcome to Your Business Journey',
+    setupProfile: 'Let\'s set up your profile',
+    name: 'Your Name',
+    businessStage: 'Business Stage',
+    industry: 'Industry',
+    saveProfile: 'Save Profile',
+    progressTitle: 'Your Progress',
+    journeyMap: 'Your Business Journey',
+    stages: {
+      idea: 'Idea Stage',
+      planning: 'Planning Stage',
+      registered: 'Registered',
+      operating: 'Operating',
+    },
+    industries: {
+      technology: 'Technology',
+      retail: 'Retail',
+      services: 'Services',
+      manufacturing: 'Manufacturing',
+      hospitality: 'Hospitality',
+      healthcare: 'Healthcare',
+      education: 'Education',
+      other: 'Other',
+    },
+    steps: {
+      step1: 'Define Your Business Idea',
+      step2: 'Research Funding Options',
+      step3: 'Understand Taxation',
+      step4: 'Get Required Permits',
+      step5: 'Set Up Business Banking',
+      step6: 'Arrange Insurance',
+      step7: 'Register Your Business',
+      step8: 'Launch Your Business',
+    },
+    stepDescriptions: {
+      step1: 'Clarify your business concept and value proposition',
+      step2: 'Explore grants, loans, and funding opportunities',
+      step3: 'Learn about VAT, income tax, and employer obligations',
+      step4: 'Identify and apply for necessary licenses',
+      step5: 'Open a business bank account and set up payment systems',
+      step6: 'Protect your business with appropriate insurance',
+      step7: 'Register with Finnish Trade Register and Tax Administration',
+      step8: 'Go to market and start operating',
+    },
+    explore: 'Explore',
+    completed: 'Completed',
+    inProgress: 'In Progress',
+  },
+  fi: {
+    // Landing page
+    hero: {
+      title: 'Aloita Yritysmatkasi',
+      subtitle: 'Espoossa',
+      description: 'Digitaalinen oppaasi yrityksen perustamiseen ja kasvattamiseen Suomessa. Saat henkilökohtaista ohjausta, navigoit säädöksissä ja otat yhteyttä asiantuntija-neuvonantajiin.',
+      ctaEntrepreneur: 'Perustan Yrityksen',
+      ctaAdvisor: 'Olen Neuvonantaja',
+      watchDemo: 'Katso Demo',
+    },
+    features: {
+      title: 'Kaikki Mitä Tarvitset Menestykseen',
+      subtitle: 'Kattavat työkalut ja ohjaus yrittäjyysmatkallesi',
+      items: [
+        {
+          title: 'Tekoälyavusteinen Ohjaus',
+          description: 'Saa välittömiä vastauksia liiketoimintakysymyksiisi älykkäällä avustajalla',
+        },
+        {
+          title: 'Vaiheittainen Tiekartta',
+          description: 'Seuraa henkilökohtaista polkua ideasta käynnistykseen selkeiden välitavoitteiden avulla',
+        },
+        {
+          title: 'Asiantuntijatuki',
+          description: 'Ota yhteyttä Espoon yritysneuvonantajiin, jotka ymmärtävät tarpeesi',
+        },
+        {
+          title: 'Monikielinen Tuki',
+          description: 'Käytä kaikkea sisältöä englanniksi tai suomeksi saumattoman ymmärryksen saavuttamiseksi',
+        },
+        {
+          title: 'Reaaliaikaiset Resurssit',
+          description: 'Käytä ajantasaista tietoa luvista, rahoituksesta ja säädöksistä',
+        },
+        {
+          title: 'Tapaamisen Valmistelu',
+          description: 'Valmistaudu neuvonantajatapaamisiin ohjattujen valmistelutyökalujen avulla',
+        },
+      ],
+    },
+    howItWorks: {
+      title: 'Näin Se Toimii',
+      subtitle: 'Matkasi ideasta menestyväksi yritykseksi kolmessa yksinkertaisessa vaiheessa',
+      steps: [
+        {
+          title: 'Luo Profiilisi',
+          description: 'Kerro meille liikeideasta ja siitä, missä olet matkallasi',
+        },
+        {
+          title: 'Seuraa Tiekarttaasi',
+          description: 'Saa henkilökohtaista ohjausta rahoitukseen, verotukseen, lupiin ja muuhun',
+        },
+        {
+          title: 'Käynnistä ja Kasva',
+          description: 'Käytä jatkuvaa tukea ja resursseja yrityksesi kasvaessa',
+        },
+      ],
+    },
+    stats: {
+      title: 'Liity Espoon Kukoistavaan Yritysyhteisöön',
+      entrepreneurs: 'Tuettua Yrittäjää',
+      resources: 'Saatavilla Olevaa Resurssia',
+      languages: 'Tuettua Kieltä',
+      satisfaction: 'Tyytyväisyysaste',
+    },
+    cta: {
+      title: 'Valmis Aloittamaan Matkasi?',
+      description: 'Liity satoihin yrittäjiin, jotka ovat onnistuneesti käynnistäneet yrityksensä alustallamme',
+      button: 'Aloita Ilmaiseksi',
+    },
+    // Original translations
+    welcome: 'Tervetuloa yritysmatkallesi',
+    setupProfile: 'Luodaan profiilisi',
+    name: 'Nimesi',
+    businessStage: 'Yrityksen vaihe',
+    industry: 'Toimiala',
+    saveProfile: 'Tallenna profiili',
+    progressTitle: 'Edistymisesi',
+    journeyMap: 'Yritysmatkasi',
+    stages: {
+      idea: 'Ideointivaihe',
+      planning: 'Suunnitteluvaihe',
+      registered: 'Rekisteröity',
+      operating: 'Toiminnassa',
+    },
+    industries: {
+      technology: 'Teknologia',
+      retail: 'Vähittäiskauppa',
+      services: 'Palvelut',
+      manufacturing: 'Valmistus',
+      hospitality: 'Majoitus ja ravintola',
+      healthcare: 'Terveydenhuolto',
+      education: 'Koulutus',
+      other: 'Muu',
+    },
+    steps: {
+      step1: 'Määrittele liikeidea',
+      step2: 'Tutki rahoitusvaihtoehtoja',
+      step3: 'Ymmärrä verotus',
+      step4: 'Hanki tarvittavat luvat',
+      step5: 'Perusta yrityksen pankkitili',
+      step6: 'Järjestä vakuutukset',
+      step7: 'Rekisteröi yrityksesi',
+      step8: 'Käynnistä yrityksesi',
+    },
+    stepDescriptions: {
+      step1: 'Selkeytä liiketoimintakonsepti ja arvolupaus',
+      step2: 'Tutustu avustuksiin, lainoihin ja rahoitusmahdollisuuksiin',
+      step3: 'Opi ALV:sta, tuloverosta ja työnantajavelvoitteista',
+      step4: 'Tunnista ja hae tarvittavat lisenssit',
+      step5: 'Avaa yrityksen pankkitili ja asenna maksujärjestelmät',
+      step6: 'Suojaa yrityksesi asianmukaisilla vakuutuksilla',
+      step7: 'Rekisteröidy kaupparekisteriin ja verohallinnolle',
+      step8: 'Mene markkinoille ja aloita toiminta',
+    },
+    explore: 'Tutustu',
+    completed: 'Valmis',
+    inProgress: 'Käynnissä',
+  }
+};
+
+export default function StartupGuide({ 
+  userProfile: userProfileProp = null, 
+  language = 'en', 
+  onSelectUserType
+}: StartupGuideProps) {
+  const { data: session } = useSession();
+  const t = translations[language];
+  const [mounted, setMounted] = useState(false);
+  const [showLanding, setShowLanding] = useState(!userProfileProp);
+
+  const router = useRouter()
+  
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      if (userProfile) {
-        localStorage.setItem('userProfile', JSON.stringify(userProfile));
-      }
-      if (userType) {
-        localStorage.setItem('userType', userType);
-      }
-      localStorage.setItem('language', language);
+    startTransition(() => {
+      setMounted(true);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (session) {
+      router.push("/home");
     }
-  }, [userProfile, userType, language]);
+  }, [session, router]);
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-lg font-medium text-slate-700">Loading Fanslio...</span>
+        </div>
+      </div>
+    );
+  }
 
-  const handleLanguageChange = (lang: Language) => {
-    setLanguage(lang);
-    if (userProfile) {
-      setUserProfile({ ...userProfile, language: lang });
-    }
-  };
 
-  const handleProfileUpdate = (profile: UserProfile) => {
-    setUserProfile(profile);
-  };
+  // Landing Page Component
+  if (showLanding) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 relative overflow-hidden">
+        {/* Animated background */}
+        <div className="absolute inset-0 overflow-hidden">
+          <Particles />
+        </div>
 
-  const renderPage = () => {
-    if (!userType) {
-      return (
-        <LandingPage 
-          onSelectUserType={setUserType}
-          language={language}
-        />
-      );
-    }
+        {/* Language Toggle */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="absolute top-8 right-8 z-20"
+        >
+          <div className="flex gap-2 bg-white/80 backdrop-blur-xl rounded-full p-1 shadow-lg border border-white/20">
+            <button
+              onClick={() => {}}
+              className={`px-4 py-2 rounded-full transition-all ${
+                language === 'en'
+                  ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              EN
+            </button>
+            <button
+              onClick={() => {}}
+              className={`px-4 py-2 rounded-full transition-all ${
+                language === 'fi'
+                  ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              FI
+            </button>
+          </div>
+        </motion.div>
 
-    if (userType === 'advisor') {
-      return <AdvisorDashboard language={language} />;
-    }
+        <div className="relative z-10">
+          {/* Hero Section */}
+          <div className="max-w-7xl mx-auto px-4 pt-32 pb-20">
+            <div className="text-center mb-16">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="mb-8"
+              >
+                <div className="inline-block mb-6">
+                  <div className="relative">
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                      className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full blur-2xl opacity-20"
+                    />
+                    <div className="relative bg-gradient-to-r from-blue-600 to-cyan-600 p-6 rounded-3xl">
+                      <Rocket className="w-16 h-16 text-white" />
+                    </div>
+                  </div>
+                </div>
+                <h1 className="text-6xl md:text-7xl font-bold mb-4">
+                  <TextReveal className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                    {t.hero.title}
+                  </TextReveal>
+                  <br />
+                  <TextReveal className="text-slate-800">{t.hero.subtitle}</TextReveal>
+                </h1>
+                <p className="text-xl text-slate-600 max-w-3xl mx-auto mb-12">
+                  {t.hero.description}
+                </p>
 
-    switch (currentPage) {
-      case 'home':
-        return (
-          <StartupGuide 
-            userProfile={userProfile}
-            onProfileUpdate={handleProfileUpdate}
-            language={language}
-            onNavigate={setCurrentPage}
-          />
-        );
-      case 'funding':
-        return <FundingModule language={language} userProfile={userProfile} onProfileUpdate={handleProfileUpdate} />;
-      case 'taxation':
-        return <TaxationModule language={language} userProfile={userProfile} onProfileUpdate={handleProfileUpdate} />;
-      case 'permits':
-        return <PermitsModule language={language} userProfile={userProfile} onProfileUpdate={handleProfileUpdate} />;
-      case 'banking':
-        return <BankingModule language={language} userProfile={userProfile} onProfileUpdate={handleProfileUpdate} />;
-      case 'insurance':
-        return <InsuranceModule language={language} userProfile={userProfile} onProfileUpdate={handleProfileUpdate} />;
-      case 'ai-assistant':
-        return <AIAssistant language={language} userProfile={userProfile} />;
-      case 'pre-meeting':
-        return <PreMeetingPrep language={language} userProfile={userProfile} onProfileUpdate={handleProfileUpdate} />;
-      case 'resources':
-        return <ResourceLibrary language={language} />;
-      default:
-        return (
-          <StartupGuide 
-            userProfile={userProfile}
-            onProfileUpdate={handleProfileUpdate}
-            language={language}
-            onNavigate={setCurrentPage}
-          />
-        );
-    }
-  };
+                {/* CTA Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                  <Link href="/register">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-2xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all overflow-hidden"
+                  >
+                    <span className="relative z-10 flex items-center gap-2">
+                      {t.hero.ctaEntrepreneur}
+                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-blue-600"
+                      initial={{ x: '-100%' }}
+                      whileHover={{ x: 0 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  </motion.div>
+                  </Link>
+                  <Link href="/register">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="px-8 py-4 bg-white/80 backdrop-blur-xl text-slate-700 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all border-2 border-slate-200 hover:border-slate-300"
+                  >
+                    {t.hero.ctaAdvisor}
+                  </motion.div>
+                  </Link>
+                </div>
+              </motion.div>
+            </div>
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {userType && (
-        <Navigation 
-          currentPage={currentPage}
-          onNavigate={setCurrentPage}
-          userType={userType}
-          language={language}
-          onLanguageChange={handleLanguageChange}
-          onLogout={() => {
-            setUserType(null);
-            setUserProfile(null);
-            setCurrentPage('home');
-          }}
-        />
-      )}
-      {renderPage()}
-    </div>
-  );
+            {/* Features Grid */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+              className="mb-32"
+            >
+              <div className="text-center mb-16">
+                <h2 className="text-4xl font-bold text-slate-800 mb-4">
+                  {t.features.title}
+                </h2>
+                <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+                  {t.features.subtitle}
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {t.features.items.map((feature, index) => {
+                  const icons = [Zap, Target, Users, Globe, BookOpen, MessageSquare];
+                  const Icon = icons[index];
+                  const colors = [
+                    'from-blue-500 to-cyan-500',
+                    'from-green-500 to-emerald-500',
+                    'from-orange-500 to-amber-500',
+                    'from-indigo-500 to-blue-500',
+                    'from-teal-500 to-cyan-500',
+                    'from-blue-600 to-indigo-600',
+                  ];
+                  return (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 * index }}
+                      whileHover={{ y: -8 }}
+                      className="bg-white/70 backdrop-blur-xl rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all border border-white/20"
+                    >
+                      <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${colors[index]} mb-4`}>
+                        <Icon className="w-6 h-6 text-white" />
+                      </div>
+                      <h3 className="text-xl font-bold text-slate-800 mb-3">
+                        {feature.title}
+                      </h3>
+                      <p className="text-slate-600 leading-relaxed">
+                        {feature.description}
+                      </p>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </motion.div>
+
+            {/* How It Works */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.6 }}
+              className="mb-32"
+            >
+              <div className="text-center mb-16">
+                <h2 className="text-4xl font-bold text-slate-800 mb-4">
+                  {t.howItWorks.title}
+                </h2>
+                <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+                  {t.howItWorks.subtitle}
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-8 relative">
+                {t.howItWorks.steps.map((step, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 * index }}
+                    className="relative"
+                  >
+                    <div className="bg-white/70 backdrop-blur-xl rounded-2xl p-8 shadow-lg border border-white/20 h-full">
+                      <div className="flex items-center gap-4 mb-6">
+                        <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 flex items-center justify-center text-white text-xl font-bold">
+                          {index + 1}
+                        </div>
+                        {index < 2 && (
+                          <ChevronRight className="hidden md:block absolute -right-4 top-1/2 -translate-y-1/2 w-8 h-8 text-blue-400" />
+                        )}
+                      </div>
+                      <h3 className="text-2xl font-bold text-slate-800 mb-4">
+                        {step.title}
+                      </h3>
+                      <p className="text-slate-600 leading-relaxed">
+                        {step.description}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Stats Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.9, duration: 0.6 }}
+              className="mb-32"
+            >
+              <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-12 shadow-2xl border border-white/20">
+                <h2 className="text-3xl font-bold text-center text-slate-800 mb-12">
+                  {t.stats.title}
+                </h2>
+                <div className="grid md:grid-cols-4 gap-8">
+                  {[
+                    { value: '500+', label: t.stats.entrepreneurs },
+                    { value: '150+', label: t.stats.resources },
+                    { value: '2', label: t.stats.languages },
+                    { value: '95%', label: t.stats.satisfaction },
+                  ].map((stat, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ delay: 1 + 0.1 * index }}
+                      className="text-center"
+                    >
+                      <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-2">
+                        {stat.value}
+                      </div>
+                      <div className="text-slate-600 font-medium">
+                        {stat.label}
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Final CTA */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.2, duration: 0.6 }}
+              className="text-center bg-gradient-to-r from-blue-600 to-cyan-600 rounded-3xl p-16 shadow-2xl"
+            >
+              <h2 className="text-4xl font-bold text-white mb-4">
+                {t.cta.title}
+              </h2>
+              <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+                {t.cta.description}
+              </p>
+              <Link href="/register">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-10 py-5 bg-white text-blue-600 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl transition-all"
+              >
+                {t.cta.button}
+              </motion.div>
+              </Link>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
 }

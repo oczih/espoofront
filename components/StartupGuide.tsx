@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, Circle, ArrowRight, User, Briefcase, Sparkles, TrendingUp, FileText, Shield, Building2, Rocket } from 'lucide-react';
+import { motion} from 'framer-motion';
+import { CheckCircle2, ArrowRight, User, Briefcase, Sparkles, TrendingUp, FileText, Shield, Building2, Rocket } from 'lucide-react';
 
 type Language = 'en' | 'fi';
 
@@ -308,7 +308,7 @@ export default function StartupGuide({
                 whileTap={{ scale: 0.98 }}
                 onClick={handleSaveProfile}
                 disabled={!formData.name || !formData.industry}
-                className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-4 rounded-xl font-semibold shadow-lg transition-colors hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {t.saveProfile}
               </motion.button>
@@ -420,12 +420,12 @@ export default function StartupGuide({
                     isCompleted
                       ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200'
                       : 'bg-white/70 backdrop-blur-xl border-2 border-white/40'
-                  } shadow-lg hover:shadow-2xl transition-all`}
+                  } shadow-lg transition-colors hover:shadow-2xl transition-all`}
                   onClick={() => step.page !== 'home' && onNavigate(step.page)}
                 >
                   {/* Gradient overlay on hover */}
                   <motion.div
-                    className={`absolute inset-0 bg-gradient-to-br ${step.color} opacity-0 group-hover:opacity-5 transition-opacity`}
+                    className={`absolute inset-0 bg-gradient-to-br ${step.color} opacity-0 group-transition-colors hover:opacity-5 transition-opacity`}
                   />
 
                   <div className="relative p-6">

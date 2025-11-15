@@ -2,7 +2,6 @@
 
 import { UserType, Language } from '../app/types';
 import { Menu, Home, DollarSign, FileText, Award, Building2, Shield, MessageSquare, ClipboardList, BookOpen, LogOut, Globe } from 'lucide-react';
-import { Button } from './ui/button';
 import {
   Sheet,
   SheetContent,
@@ -82,7 +81,7 @@ export default function Navigation({ currentPage, onNavigate, userType, language
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
                     currentPage === item.id
                       ? 'bg-blue-100 text-blue-700'
-                      : 'text-gray-700 hover:bg-gray-100'
+                      : 'text-gray-700 transition-colors hover:bg-gray-100'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -94,7 +93,6 @@ export default function Navigation({ currentPage, onNavigate, userType, language
 
           <div className="flex items-center gap-3">
             <button
-              variant="ghost"
               
               onClick={() => onLanguageChange(language === 'en' ? 'fi' : 'en')}
               className="gap-2"
@@ -104,8 +102,6 @@ export default function Navigation({ currentPage, onNavigate, userType, language
             </button>
 
             <button
-              variant="ghost"
-              
               onClick={onLogout}
               className="gap-2"
             >
@@ -116,7 +112,7 @@ export default function Navigation({ currentPage, onNavigate, userType, language
             {/* Mobile Menu */}
             <Sheet>
               <SheetTrigger asChild>
-                <button variant="ghost"  className="lg:hidden">
+                <button className="lg:hidden">
                   <Menu className="w-5 h-5" />
                   <span className="sr-only">{t.menu}</span>
                 </button>
@@ -132,7 +128,7 @@ export default function Navigation({ currentPage, onNavigate, userType, language
                         className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                           currentPage === item.id
                             ? 'bg-blue-100 text-blue-700'
-                            : 'text-gray-700 hover:bg-gray-100'
+                            : 'text-gray-700 transition-colors hover:bg-gray-100'
                         }`}
                       >
                         <Icon className="w-5 h-5" />

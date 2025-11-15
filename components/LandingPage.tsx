@@ -86,13 +86,13 @@ export default function LandingPage({ onSelectUserType, language }: LandingPageP
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={() => onSelectUserType('entrepreneur')}
-              className="bg-blue-600 cursor-pointer hover:bg-blue-700 text-white px-8 py-6"
+              className="bg-blue-600 cursor-pointer transition-colors hover:bg-blue-700 text-white px-8 py-6"
             >
               {t.entrepreneur}
             </button>
             <button
   onClick={() => onSelectUserType('advisor')}
-  className="border cursor-pointer border-blue-600 text-blue-600 hover:bg-blue-50 px-8 py-6"
+  className="border cursor-pointer border-blue-600 text-blue-600 transition-colors hover:bg-blue-50 px-8 py-6"
 >
   {t.advisor}
 </button>
@@ -108,7 +108,7 @@ export default function LandingPage({ onSelectUserType, language }: LandingPageP
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
-                <Card key={index} className="p-6 hover:shadow-lg transition-shadow">
+                <Card key={index} className="p-6 transition-colors hover:shadow-lg transition-shadow">
                   <Icon className="w-10 h-10 text-blue-600 mb-4" />
                   <h3 className="text-gray-900 mb-2">{feature.title}</h3>
                   <p className="text-gray-600">{feature.desc}</p>

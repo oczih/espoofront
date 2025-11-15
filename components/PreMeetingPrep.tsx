@@ -293,7 +293,7 @@ ${t.tipsList.map((tip: string, i: number) => `${i + 1}. ${tip}`).join('\n')}
         <div className="flex gap-3">
           <button
             onClick={handleSave}
-            className="flex-1 bg-blue-600 hover:bg-blue-700"
+            className="flex-1 bg-blue-600 transition-colors hover:bg-blue-700"
           >
             {saved ? (
               <>

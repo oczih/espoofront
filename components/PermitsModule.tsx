@@ -236,7 +236,7 @@ export default function PermitsModule({ language, userProfile, onProfileUpdate }
             <button
               onClick={handleMarkComplete}
               disabled={isModuleComplete}
-              className="ml-4 bg-blue-600 hover:bg-blue-700"
+              className="ml-4 bg-blue-600 transition-colors hover:bg-blue-700"
             >
               {isModuleComplete ? (
                 <>
@@ -260,7 +260,7 @@ export default function PermitsModule({ language, userProfile, onProfileUpdate }
         <Accordion type="single" collapsible className="space-y-3">
           {universalPermits.map((permit) => (
             <AccordionItem key={permit.id} value={permit.id} className="border rounded-lg px-6 bg-white">
-              <AccordionTrigger className="hover:no-underline">
+              <AccordionTrigger className="transition-colors hover:no-underline">
                 <div className="flex items-center gap-4 text-left">
                   <FileCheck className="w-6 h-6 text-blue-600 flex-shrink-0" />
                   <div>
@@ -311,7 +311,7 @@ export default function PermitsModule({ language, userProfile, onProfileUpdate }
                   isRelevant ? 'bg-yellow-50 border-yellow-200' : 'bg-white'
                 }`}
               >
-                <AccordionTrigger className="hover:no-underline">
+                <AccordionTrigger className="transition-colors hover:no-underline">
                   <div className="flex items-center gap-4 text-left">
                     <Award className="w-6 h-6 text-blue-600 flex-shrink-0" />
                     <div className="flex-1">

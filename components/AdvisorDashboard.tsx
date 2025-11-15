@@ -288,7 +288,7 @@ export default function AdvisorDashboard({ language }: AdvisorDashboardProps) {
         ) : (
           <div className="space-y-3">
             {filteredClients.map((client) => (
-              <Card key={client.id} className="p-6 hover:shadow-lg transition-shadow">
+              <Card key={client.id} className="p-6 transition-colors hover:shadow-lg transition-shadow">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
