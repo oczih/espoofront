@@ -154,7 +154,11 @@ interface NavigationProps {
 
             <div className="mt-6 space-y-4">
             <Card key={language} className="p-4">
-  <h3 className="mb-4">Things to consider for a business plan</h3>
+  <h3 className="mb-4">
+    {language === 'fi'
+      ? 'Huomioitavia asioita liiketoimintasuunnitelmassa'
+      : 'Things to consider for a business plan'}
+  </h3>
   <div className="space-y-3">
   {currentChecklist.map(item => (
   <div key={item.id} className="flex items-start space-x-3">
@@ -178,12 +182,12 @@ interface NavigationProps {
 
               <div className="pt-4">
               <button
-  className={`w-full px-4 py-2 rounded-md text-white font-medium transition-colors
-    ${allChecked ? 'bg-indigo-600 hover:bg-indigo-700 cursor-pointer' : 'bg-indigo-300'}`}
-  onClick={handleBookingClick}
->
-  Book Appointment
-</button> 
+                className={`w-full px-4 py-2 rounded-md text-white font-medium transition-colors
+                  ${allChecked ? 'bg-indigo-600 hover:bg-indigo-700 cursor-pointer' : 'bg-indigo-300'}`}
+                onClick={handleBookingClick}
+              >
+                {language === "fi" ? "Varaa Tapaaminen" : "Book Appointment"}
+              </button>
 
               </div>
             </div>
