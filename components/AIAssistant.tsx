@@ -64,6 +64,7 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const prevLangRef = useRef<Language>(language);
   const [newMessageId, setNewMessageId] = useState<string | null>(null);
   // Hydration and localStorage loading
   useEffect(() => {
@@ -100,6 +101,27 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
+
+  // Change the welcome message on language change, if no user messages yet
+  useEffect(() => {
+    if (!isHydrated) return;
+    if (prevLangRef.current !== language) {
+      const userHasSentMessage = messages.some(m => m.role === 'user');
+      if (userHasSentMessage) {
+        // Do nothing
+        prevLangRef.current = language;
+        return;
+      }
+      // Update welcome message
+      setMessages([{
+        id: '1',
+        role: 'assistant',
+        content: t.welcomeMessage,
+        timestamp: new Date(),
+      }]);
+      prevLangRef.current = language;
+    }
+  }, [language, messages, isHydrated, t.welcomeMessage]);
 
 
   const handleSend = async (promptToSend?: string) => {
