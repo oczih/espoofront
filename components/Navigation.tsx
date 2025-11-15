@@ -120,7 +120,7 @@ interface NavigationProps {
           <img src="/businessespoo_small.png" alt="Business Espoo logo" className="w-14 h-5 object-contain"/>
         </div>
         <div>
-          <h1 className="font-semibold font-bold text-black">{language === "fi" ? "Yritysneuvoja AI": "Business Advisor AI"}</h1>
+          <h1 className="font-semibold font-bold text-black">{language === "fi" ? "Espoo BusinessPal": "Espoo BusinessPal"}</h1>
           <p className="text-sm text-gray-600">{language === "fi" ? "Yrittäjäkumppanisi" :"Your entrepreneurial companion"}</p>
         </div>
       </div>
