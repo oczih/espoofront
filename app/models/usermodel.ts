@@ -9,8 +9,9 @@ export interface EspooUserDocument extends Document {
   email?: string;
   name: string;
   number?: string;
+  hometown?: string;
   oauthProvider?: string;
-  business: Types.ObjectId[] | BusinessDocument[];
+  business: Types.ObjectId | BusinessDocument;
   appointments?: Types.ObjectId[] | AppointmentDocument[];
 }
 
@@ -20,13 +21,17 @@ const userSchema = new Schema<EspooUserDocument>({
   email: {
     type: String,
     unique: true,
-    required: function () {
+    required: function (this: EspooUserDocument): boolean {
       return !this.oauthProvider;
     },
-    match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, "Email is invalid"],
+    match: [
+      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+      "Email is invalid"
+    ],
   },
   dob: { type: String },
   number: { type: String },
+  hometown: {type: String},
   oauthProvider: { type: String },
   business: [{ type: Schema.Types.ObjectId, ref: "Business" }],
   appointments: [{ type: Schema.Types.ObjectId, ref: "Appointment" }],

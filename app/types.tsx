@@ -17,8 +17,9 @@ export interface EspooUser {
   email?: string;
   name: string;
   number?: string;
+  hometown?: string;
   oauthProvider?: string;
-  business: Business[] | string[]; // array of Business or ObjectId
+  business: Business | string; // array of Business or ObjectId
   appointments?: Appointment[] | string[]; // array of Appointment or ObjectId
 }
 declare module "next-auth" {
@@ -28,9 +29,10 @@ declare module "next-auth" {
     dob?: string;
     email?: string;
     name: string;
+    hometown?: string;
     number?: string;
     oauthProvider?: string;
-    business: Business[] | string[]; // array of Business or ObjectId
+    business: Business | string; // array of Business or ObjectId
     appointments?: Appointment[] | string[]; // array of Appointment or ObjectId
   }
 
