@@ -185,28 +185,17 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
   if (!isHydrated) return null;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
-              <Sparkles className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-gray-900">{t.title}</h1>
-              <p className="text-gray-600">{t.subtitle}</p>
-            </div>
-          </div>
-          <button
-            onClick={handleClearChat}
-            className="px-4 py-2 text-sm text-gray-600 cursor-pointer hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            {t.clearChat}
-          </button>
-        </div>
+    <div className="max-w-4xl mx-auto px-4 py-6">
+      <div className="mb-4 flex items-center justify-end">
+      <button
+        onClick={handleClearChat}
+        className="px-4 py-2 text-sm text-gray-600 cursor-pointer hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors font-medium"
+      >
+        {t.clearChat}
+      </button>
       </div>
 
-      <Card className="flex flex-col h-[800px] max-h-[90vh]">
+      <Card className="flex flex-col h-[70vh] max-h-[800px]">
   {/* Messages */}
   <div
     ref={scrollRef}
