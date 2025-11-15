@@ -124,9 +124,6 @@ interface NavigationProps {
         </div>
       </div>
       <div className="flex items-center gap-3">
-      <Button onClick={() => signOut()} className="bg-red-500 cursor-pointer transition-colorstext-white px-4 py-2 rounded hover:bg-red-600">
-          {language === "fi" ? "Kirjaudu ulos":"Sign out"}
-        </Button>
         <Select value={language} onValueChange={onLanguageChange}>
           <SelectTrigger className="w-[140px] text-black">
             <SelectValue placeholder="Language" />
@@ -191,6 +188,10 @@ interface NavigationProps {
             </div>
           </DialogContent>
         </Dialog>
+
+        <Button onClick={() => signOut()} className="bg-red-500 cursor-pointer transition-colors text-white px-4 py-2 rounded hover:bg-red-600 ml-3">
+          {language === "fi" ? "Kirjaudu ulos":"Sign out"}
+        </Button>
 
         {/* Render AppointmentBooking via createPortal */}
         {warningModal && typeof window !== 'undefined' &&
