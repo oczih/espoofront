@@ -103,13 +103,13 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
   }, [messages, isTyping]);
 
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
-  
+  const handleSend = async (promptToSend?: string) => {
+    if (!input.trim() && !promptToSend?.trim()) return;
+
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: input,
+      content: promptToSend || input,
       timestamp: new Date(),
     };
 
@@ -169,6 +169,7 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
 
   const handleSuggestion = (question: string) => {
     setInput(question);
+    handleSend(question);
   };
 
   const handleClearChat = () => {
