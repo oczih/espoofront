@@ -89,21 +89,47 @@ export default function UserDataModal({ user, onComplete }: UserDataModalProps) 
               <div>
                 <Label>Date of Birth</Label>
                 <Popover>
-                  <PopoverTrigger asChild>
-                    <button className="w-full justify-start mt-1">
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {dob ? dob.toLocaleDateString() : "Select date"}
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                  <Calendar
-                        mode="single"
-                        selected={dob}
-                        onSelect={setDob}
-                        className="rounded-lg border w-full"
-                    />
-                  </PopoverContent>
-                </Popover>
+  <PopoverTrigger asChild>
+    {/* ---- Trigger button – gray border, full width, left-aligned ---- */}
+    <button
+      className={`
+        flex w-full items-center justify-start gap-2
+        rounded-md border border-gray-300 bg-background
+        px-3 py-2 text-sm text-muted-foreground mt-2
+        transition-colors hover:bg-accent hover:text-accent-foreground
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
+        disabled:pointer-events-none disabled:opacity-50
+      `}
+    >
+      <CalendarIcon className="h-4 w-4" />
+      {dob ? dob.toLocaleDateString() : "Select date"}
+    </button>
+  </PopoverTrigger>
+
+  {/* ---- Calendar popover – scrollable, gray border ---- */}
+  <PopoverContent className="w-auto p-0" align="start">
+    <div className="max-h-[340px] overflow-y-auto p-3">
+      <Calendar
+        mode="single"
+        selected={dob}
+        onSelect={setDob}
+        startMonth={new Date(1900, 0)}
+        endMonth={new Date()}
+        captionLayout="dropdown"
+
+        classNames={{
+          day: "h-9 w-9 text-sm flex items-center justify-center rounded-md cursor-pointer",
+          day_selected:
+            "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground",
+          day_today: "bg-accent text-accent-foreground",
+        }}
+
+        /* ---- Calendar itself gets a gray border ---- */
+        className="rounded-md border border-gray-300 shadow-sm"
+      />
+    </div>
+  </PopoverContent>
+</Popover>
               </div>
             )}
             {missingFields.includes("number") && (

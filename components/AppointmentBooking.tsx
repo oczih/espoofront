@@ -125,7 +125,6 @@ interface AppointmentBookingProps {
             setLoading(false)
         }
       };
-        console.log(isBooked)
       if (isBooked) {
         return (
           <div className="min-h-screen flex items-center rounded-2xl justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
