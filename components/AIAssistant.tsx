@@ -273,7 +273,7 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
   <div className="p-4 border-t flex gap-2">
     <Input
       value={input}
-      label='Your message'
+      label={language === 'fi' ? 'Viestisi' : 'Your message'}
       onChange={(e) => setInput(e.target.value)}
       onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
       placeholder={t.placeholder}
