@@ -36,9 +36,9 @@ const translations = {
   en: {
     // Landing page
     hero: {
-      title: 'Start Your Business Journey',
-      description: 'Your digital guide to starting and growing a business in Finland. Get personalized guidance, navigate regulations, and connect with expert advisors.',
-      ctaEntrepreneur: 'I\'m Starting a Business',
+      title: 'Start Your Business Journey with Espoo BusinessPal',
+      description: 'Your digital advisor to starting and growing a business in Finland. Get personalized guidance, navigate regulations, and connect with expert advisors.',
+      ctaEntrepreneur: 'I want to start a business',
       ctaAdvisor: 'I\'m an Advisor',
       watchDemo: 'Watch Demo',
     },
@@ -74,19 +74,19 @@ const translations = {
     },
     howItWorks: {
       title: 'How It Works',
-      subtitle: 'Your journey from idea to successful business in three simple steps',
+      subtitle: 'Get most most out of Business Espoo services with three simple steps and kickstart your business.    ',
       steps: [
         {
-          title: 'Create Your Profile',
-          description: 'Tell us about your business idea and where you are in your journey',
+          title: 'Create your profile',
+          description: 'Tell us about your business idea and where you are in your journey.',
+        },
+        { 
+          title: 'Book a meeting and prepare',
+          description: 'Let our AI advisor help you with funding, taxation, permits, and more.',
         },
         {
-          title: 'Follow Your Roadmap',
-          description: 'Get personalized guidance through funding, taxation, permits, and more',
-        },
-        {
-          title: 'Launch & Grow',
-          description: 'Access ongoing support and resources as your business grows',
+          title: 'Meet an Advisor',
+          description: 'Discuss your idea with an expert to launch your business with confidence.',
         },
       ],
     },
@@ -99,8 +99,8 @@ const translations = {
     },
     cta: {
       title: 'Ready to Start Your Journey?',
-      description: 'Join hundreds of entrepreneurs who have successfully launched their businesses with our platform',
-      button: 'Get Started Free',
+      description: 'Join hundreds of entrepreneurs who have successfully launched their businesses with help of Espoo BusinessPal.',
+      button: 'Get Started',
     },
     // Original translations
     welcome: 'Welcome to Your Business Journey',
