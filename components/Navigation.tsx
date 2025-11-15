@@ -83,11 +83,11 @@ export default function Navigation({ language, onLanguageChange }: NavigationPro
   const dialogTexts: Record<Language, { title: string; description: string }> = {
     en: {
       title: "Prepare and Book a Meeting",
-      description: "Before booking a meeting please make sure that you have drafted a business plan for most benefit",
+      description: "Before booking please make sure that you have drafted a business plan for most benefit. Feel free to to discuss with the AI assistant if you need help with any of the topics.",
     },
     fi: {
       title: "Valmistele ja varaa tapaaminen",
-      description: "Ennen tapaamisen varaamista varmista, että olet laatinut liiketoimintasuunnitelman mahdollisimman hyödylliseksi",
+      description: "Jotta tapaaminen olisi madollisimman hyödyllinen, varmista, että olet laatinut liiketoimintasuunnitelman etukäteen. Voit keskustella mistä tahansa aiheesta AI-assistentin kanssa."
     },
   };
   const warningDialogTexts: Record<Language, {
