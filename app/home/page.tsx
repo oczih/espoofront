@@ -2,7 +2,6 @@
 
 import { useState, useEffect, startTransition } from 'react';
 import Navigation from '@/components/Navigation';
-import StartupGuide from '@/components/StartupGuide';
 import AIAssistant from '@/components/AIAssistant';
 import UserDataModal from '@/components/UserDataModal';
 import { UserType, Language, UserProfile, EspooUser } from '@/app/types';
@@ -26,7 +25,6 @@ export default function App() {
       setUserType('entrepreneur');
       setEspooUser(session.user);
 
-      // Initialize user profile from localStorage or defaults
       if (typeof window !== 'undefined') {
         const savedProfile = localStorage.getItem('userProfile');
         setUserProfile(savedProfile
@@ -80,13 +78,16 @@ export default function App() {
 
   if (!mounted) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
-
-
   return (
     <div className="min-h-screen bg-gray-50">
-        <Navigation />
       {needsModal && espooUser && <UserDataModal user={espooUser} onComplete={handleModalComplete} />}
-     <AIAssistant userProfile={userProfile} language={language} />;
+      
+      <Navigation
+        language={language}
+        onLanguageChange={handleLanguageChange} // only language control
+      />
+  
+      <AIAssistant userProfile={userProfile} language={language} />
     </div>
   );
 }
