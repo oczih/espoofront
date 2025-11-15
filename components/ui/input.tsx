@@ -66,6 +66,7 @@ export const Input = ({
 
       <input
         type="text"
+        value={value}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         {...props}
