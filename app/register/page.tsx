@@ -1,8 +1,8 @@
 "use client";
-import { useState } from "react";
+import { startTransition, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Building2 } from "lucide-react";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { toast } from "sonner"
 import { useRouter } from "next/navigation";
 function Modal({ open, onClose, title, children }: { open: boolean, onClose: () => void, title: string, children: React.ReactNode }) {
@@ -29,11 +29,34 @@ function Modal({ open, onClose, title, children }: { open: boolean, onClose: () 
 }
 
 export default function RegisterPage() {
+const { data: session } = useSession();
   const [showTerms, setShowTerms] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-const router = useRouter(); 
-  
+    const router = useRouter(); 
+    const [mounted, setMounted] = useState(false);
+    
+    useEffect(() => {
+    startTransition(() => {
+        setMounted(true);
+    });
+    }, []);
+
+    useEffect(() => {
+    if (session) {
+        router.push("/home");
+    }
+    }, [session, router]);
+    if (!mounted) {
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="flex items-center gap-3">
+            <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            <span className="text-lg font-medium text-slate-700">Loading the app...</span>
+        </div>
+        </div>
+    );
+    }
   const handleOAuthSignIn = async (provider: string) => {
     setIsLoading(true)
     try {

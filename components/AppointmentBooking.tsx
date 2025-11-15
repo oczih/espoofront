@@ -134,7 +134,7 @@ interface AppointmentBookingProps {
                 <Button
                   variant="ghost"
                   onClick={onBack}
-                  className="mb-6 flex items-center cursor-pointer gap-2 text-gray-800 hover:text-gray-900"
+                  className="mb-6 flex items-center cursor-pointer cursor-pointer gap-2 text-gray-800 hover:text-gray-900"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   {t.back}

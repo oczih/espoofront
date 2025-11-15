@@ -5,7 +5,8 @@ import { authOptions } from "@/lib/auth-client";
 import { connectDB } from "@/lib/mongoose";
 import EspooUserModel, { EspooUserDocument } from "@/app/models/usermodel";
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, context: unknown) {
+    const { params } = context as { params: { id: string } };
   try {
     await connectDB();
 

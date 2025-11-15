@@ -17,28 +17,42 @@ export default function MarkdownRenderer({ content, className }: MarkdownRendere
         // Do NOT use rehype-raw by default to avoid rendering raw HTML from untrusted sources.
         components={((): Components => {
           // Explicitly type renderer props to avoid implicit 'any'
-          type AnchorRendererProps = React.ComponentPropsWithoutRef<'a'> & { href?: string; node?: any; children?: React.ReactNode };
-          type CodeRendererProps = React.HTMLAttributes<HTMLElement> & { inline?: boolean; className?: string; node?: any; children?: React.ReactNode };
+          type AnchorRendererProps = Omit<React.ComponentPropsWithoutRef<'a'>, 'children'> & { 
+            href?: string; 
+            node?: unknown; 
+            children?: React.ReactNode;
+          };
+          type CodeRendererProps = Omit<React.HTMLAttributes<HTMLElement>, 'children' | 'className'> & { 
+            inline?: boolean; 
+            className?: string; 
+            node?: unknown; 
+            children?: React.ReactNode;
+          };
 
           const mdComponents: Components = {
-            a: ({ children, ...props }: AnchorRendererProps) => (
-              // Open links in new tab and keep styling
-              // eslint-disable-next-line jsx-a11y/anchor-has-content
-              <a {...(props as any)} target="_blank" rel="noreferrer" className="text-blue-500 underline">
-                {children}
-              </a>
-            ),
-            code: ({ inline, className, children, ...props }: CodeRendererProps) => {
+            a: ({ children, node, ...props }: AnchorRendererProps) => {
+              // Explicitly ignore node property from react-markdown AST
+              void node;
+              return (
+                // Open links in new tab and keep styling
+                <a {...props} target="_blank" rel="noreferrer" className="text-blue-500 underline">
+                  {children}
+                </a>
+              );
+            },
+            code: ({ inline, className, children, node, ...props }: CodeRendererProps) => {
+              // Explicitly ignore node property from react-markdown AST
+              void node;
               if (inline) {
                 return (
-                  <code className={`bg-gray-200 text-sm px-1 py-0.5 rounded ${className ?? ''}`} {...(props as any)}>
+                  <code className={`bg-gray-200 text-sm px-1 py-0.5 rounded ${className ?? ''}`} {...props}>
                     {children}
                   </code>
                 );
               }
               return (
                 <pre className="bg-gray-900 text-white rounded p-3 overflow-auto text-sm">
-                  <code className={className as string} {...(props as any)}>
+                  <code className={className ?? ''} {...props}>
                     {children}
                   </code>
                 </pre>
