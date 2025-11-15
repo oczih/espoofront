@@ -163,14 +163,6 @@ const { data: session } = useSession();
           </button>
         </div>
 
-        <div className="text-center pt-6 border-t border-gray-200">
-          <p className="text-gray-600 text-sm">
-            Already have an account?{' '}
-            <a href="/login" className="text-blue-600 hover:text-blue-700 font-semibold underline">
-              Sign in
-            </a>
-          </p>
-        </div>
       </motion.div>
 
       <Modal open={showTerms} onClose={() => setShowTerms(false)} title="Terms of Service">
