@@ -123,6 +123,12 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
     setIsTyping(true);
 
     try {
+      // Prepare conversation history for context
+      const conversationHistory = messages.map(msg => ({
+        role: msg.role,
+        content: msg.content
+      }));
+
       const response = await fetch(BACKEND_URL, {
         method: 'POST',
         headers: {
@@ -130,11 +136,10 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
         },
         body: JSON.stringify({
           user_prompt: userInput,
+          conversation_history: conversationHistory,
+          // user_profile: userProfile,
         }),
       });
-      console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
-      console.log('Response body:', await response.clone().text());
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
