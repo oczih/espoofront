@@ -112,10 +112,9 @@ export default function AIAssistant({ language, userProfile }: AIAssistantProps)
       content: promptToSend || input,
       timestamp: new Date(),
     };
-
     setMessages(prev => [...prev, userMessage]);
   setNewMessageId(userMessage.id); // mark as new
-    const userInput = input;
+    const userInput = promptToSend || input;
     setInput('');
   setIsTyping(true);
 
