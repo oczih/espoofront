@@ -35,7 +35,8 @@ const translations = {
       'How do I register for VAT in Finland?',
       'What different types of companies are there in Finland?',
       'Do I need YEL insurance if I\'m just starting?',
-      'What does a business plan include?'
+      'What does a business plan include?',
+      'Do I need residence permit to start a business in Finland?',
     ],
   },
   fi: {
@@ -50,9 +51,10 @@ const translations = {
     suggestedQuestions: [
       'Mitä rahoitusvaihtoehtoja on saatavilla teknologia-startupeille?',
       'Miten rekisteröidyn ALV:n maksajaksi Suomessa?',
-      'Mitä lupia tarvitsen ravintolaliiketoimintaan?',
-      'Mikä pankki on paras pienelle verkkoyritykselle?',
+      'Mitä erilaisia yritysmuotoja Suomessa on?',
       'Tarvitsenko YEL-vakuutuksen, jos olen vasta aloittamassa?',
+      'Mitä liiketoimintasuunnitelma sisältää?',
+      'Tarvitsenko oleskeluluvan yrityksen perustamiseen Suomessa?',
     ],
   }
 };
