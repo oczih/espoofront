@@ -115,7 +115,7 @@ export default function Navigation({ language, onLanguageChange }: NavigationPro
     <div className="bg-white shadow-sm border-b p-4 flex items-center justify-between">
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
-          <span className="text-white">AI</span>
+          <img src="/businesespoo.png"/>
         </div>
         <div>
           <h1 className="font-semibold font-bold text-black">Business Advisor AI</h1>
