@@ -7,6 +7,7 @@ export interface AppointmentDocument extends Document {
   business: Types.ObjectId | BusinessDocument;
   user: Types.ObjectId | EspooUserDocument;
   date: Date;
+  type: "remote" | "onsite"
   notes?: string;
   status: "scheduled" | "completed" | "cancelled";
 }
@@ -16,6 +17,7 @@ const appointmentSchema = new Schema<AppointmentDocument>({
   user: { type: Schema.Types.ObjectId, ref: "EspooUser", required: true },
   date: { type: Date, required: true },
   notes: { type: String },
+  type: {type: String, enum: ["remote", "onsite"], default: "remote"},
   status: { type: String, enum: ["scheduled", "completed", "cancelled"], default: "scheduled" },
 }, { timestamps: true });
 

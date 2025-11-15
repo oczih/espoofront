@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { businessId, date, notes, status = "scheduled" } = body;
+    const { businessId, date, type, notes, status = "scheduled" } = body;
 
     if (!businessId || !date) {
       return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
@@ -52,6 +52,7 @@ export async function POST(req: NextRequest) {
       user: session.user.id, // ensure your session contains user ID
       date: new Date(date),
       notes,
+      type,
       status,
     });
 

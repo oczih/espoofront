@@ -30,9 +30,11 @@ const timeSlots = [
 interface AppointmentBookingProps {
     onBack?: () => void;
     language?: "en" | "fi";
+    onBooked?: () => void;
+    setShowAppointment?: (show: boolean) => void;
   }
 
-  export function AppointmentBooking({ onBack, language = "en" }: AppointmentBookingProps) {
+  export function AppointmentBooking({ onBack, onBooked, language = "en", setShowAppointment }: AppointmentBookingProps) {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
     const [selectedTime, setSelectedTime] = useState("");
     const [notes, setNotes] = useState("");
@@ -107,6 +109,7 @@ interface AppointmentBookingProps {
             body: JSON.stringify({
               businessId: businessId,
               date: dateTime,
+              type: meetingType,
               notes,
             }),
           });
@@ -114,6 +117,7 @@ interface AppointmentBookingProps {
           if (!res.ok) throw new Error("Failed to book appointment");
       
           setIsBooked(true);
+          if (onBooked) onBooked();
         } catch (err) {
           console.error(err);
           alert("Failed to book appointment");
@@ -121,7 +125,7 @@ interface AppointmentBookingProps {
             setLoading(false)
         }
       };
-      
+        console.log(isBooked)
       if (isBooked) {
         return (
           <div className="min-h-screen flex items-center rounded-2xl justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
@@ -158,10 +162,16 @@ interface AppointmentBookingProps {
                 </div>
                 <p className="text-sm text-gray-600 mb-6">{t.reminder}</p>
                 <Button
-                  className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl shadow-md"
-                  onClick={() => setIsBooked(false)}
+                  className="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl shadow-md"
+                  onClick={() => {
+                    if (setShowAppointment) {
+                      setShowAppointment(false);
+                    } else if (onBack) {
+                      onBack();
+                    }
+                  }}
                 >
-                  {t.cancel}
+                  {t.back}
                 </Button>
               </Card>
             </div>

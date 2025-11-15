@@ -58,6 +58,7 @@ export interface Appointment {
   business: Business | string; // populated Business or ObjectId
   user: EspooUser | string; // populated user or ObjectId
   date: Date;
+  type: "remote"| "onsite"
   notes?: string;
   status: "scheduled" | "completed" | "cancelled";
 }

@@ -4,16 +4,11 @@ import { useState, useEffect, startTransition } from 'react';
 import Navigation from '@/components/Navigation';
 import AIAssistant from '@/components/AIAssistant';
 import UserDataModal from '@/components/UserDataModal';
-import { UserType, Language, UserProfile, EspooUser } from '@/app/types';
+import { UserType, Language, UserProfile, EspooUser, Appointment } from '@/app/types';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
-interface Appointment {
-  _id: string;
-  date: string;
-  notes?: string;
-  status: string;
-}
+
 
 export default function App() {
   const { data: session } = useSession();
@@ -24,7 +19,32 @@ export default function App() {
   const [needsModal, setNeedsModal] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [appointmentsUpdated, setAppointmentsUpdated] = useState(false);
   const router = useRouter();
+
+  const fetchAppointments = async () => {
+    if (!session?.user?.business) return;
+
+    const businesses = Array.isArray(session.user.business)
+      ? session.user.business
+      : [session.user.business];
+
+    const businessId = typeof businesses[0] === 'string'
+      ? businesses[0]
+      : businesses[0]._id;
+
+    try {
+      const res = await fetch(`/api/appointments?businessId=${businessId}`);
+      const data = await res.json();
+      const apps = (data.appointments || []).map((a: Appointment) => ({
+        ...a,
+        type: a.type || "remote", // default to remote if missing
+      }));
+      setAppointments(apps);
+    } catch (err) {
+      console.error('Failed to fetch appointments', err);
+    }
+  };
 
   // Initialize session user & profile
   useEffect(() => {
@@ -58,33 +78,29 @@ export default function App() {
     checkMissing();
   }, [session?.user?.id]);
 
-  // Fetch appointments for this user's business
+  // Initial fetch
   useEffect(() => {
     if (!session?.user?.business) return;
   
-    // Ensure business is treated as an array
-    const businesses = Array.isArray(session.user.business)
-      ? session.user.business
-      : [session.user.business];
-  
-    // Pick first business id
-    const businessId = typeof businesses[0] === 'string'
-      ? businesses[0]
-      : businesses[0]._id;
-  
-    const fetchAppointments = async () => {
-      try {
-        const res = await fetch(`/api/appointments?businessId=${businessId}`);
-        const data = await res.json();
-        setAppointments(data.appointments || []);
-      } catch (err) {
-        console.error('Failed to fetch appointments', err);
-      }
+    const fetch = async () => {
+      await fetchAppointments();
     };
   
-    fetchAppointments();
+    fetch();
   }, [session?.user?.business]);
+
+  useEffect(() => {
+    if (!appointmentsUpdated) return;
   
+    const refetchAppointments = async () => {
+      await fetchAppointments(); // fetch new appointments
+      startTransition(() => {
+        setAppointmentsUpdated(false); // mark as done without cascading render
+      });
+    };
+  
+    refetchAppointments();
+  }, [appointmentsUpdated]);
 
   useEffect(() => {
     startTransition(() => setMounted(true));
@@ -118,8 +134,9 @@ export default function App() {
       
       <Navigation
         language={language}
-        onLanguageChange={handleLanguageChange} // only language control
-      />
+        onLanguageChange={handleLanguageChange}
+        onBooked={() => setAppointmentsUpdated(true)}
+        />
 
       <div className="flex flex-1 gap-4 px-4 mt-4">
         <div className="flex-1">
@@ -131,31 +148,31 @@ export default function App() {
           {appointments.length === 0 ? (
             <p className="text-gray-500 text-sm text-black">{language === "fi" ? "Ei tulevia tapaamisia":"No upcoming appointments."}</p>
           ) : (
-<ul className="space-y-3">
-  {appointments
-    .filter(app => new Date(app.date) > new Date()) // Only future appointments
-    .map(app => (
-      <li key={app._id} className="border border-gray-200 rounded-lg p-3 hover:bg-gray-50 transition">
-        <p className="text-sm text-gray-600">
-          {language === "fi" 
-            ? new Date(app.date).toLocaleDateString('fi-FI') + ' ' + new Date(app.date).toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' }) 
-            : new Date(app.date).toLocaleDateString('en-US') + ' ' + new Date(app.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          }
-        </p>
-        {app.notes && <p className="text-sm text-gray-800 mt-1">{app.notes}</p>}
-        <p className={`text-xs mt-1 font-medium ${app.status === 'scheduled' ? 'text-blue-600' : 'text-gray-400'}`}>
-          {language === "fi" 
-            ? app.status === 'scheduled' 
-              ? 'Aikataulutettu' 
-              : 'Peruutettu' 
-            : app.status.charAt(0).toUpperCase() + app.status.slice(1)
-          }
-        </p>
-      </li>
-    ))
-  }
-</ul>
-
+            <ul className="space-y-3">
+              {appointments
+                .filter(app => new Date(app.date) > new Date())
+                .map(app => (
+                  <li key={app.id} className="border border-gray-200 rounded-lg p-3 hover:bg-gray-50 transition">
+                    <p className="text-sm text-gray-600">
+                      {language === "fi" 
+                        ? new Date(app.date).toLocaleDateString('fi-FI') + ' ' + new Date(app.date).toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' }) 
+                        : new Date(app.date).toLocaleDateString('en-US') + ' ' + new Date(app.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                      }
+                    </p>
+                    {app.notes && <p className="text-sm text-gray-800 mt-1">{app.notes}</p>}
+                    <p className={`text-xs mt-1 font-medium ${app.status === 'scheduled' ? 'text-blue-600' : 'text-gray-400'}`}>
+                      {language === "fi" 
+                        ? app.status === 'scheduled' 
+                          ? 'Aikataulutettu' 
+                          : 'Peruutettu' 
+                        : app.status.charAt(0).toUpperCase() + app.status.slice(1)
+                      }
+                    </p>
+                    <p className="text-xs mt-1 font-medium text-black">{app.type === "onsite" ? (language === "fi" ? "Paikan päällä" : "On-site") : (language === "fi" ? "Etänä" : "Remote")}</p>
+                  </li>
+                ))
+              }
+            </ul>
           )}
         </div>
       </div>

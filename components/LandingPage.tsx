@@ -1,7 +1,6 @@
 'use client';
 
 import { UserType, Language } from '../app/types';
-import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Building2, Users, TrendingUp, Shield, Globe, MessageSquare } from 'lucide-react';
 

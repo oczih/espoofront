@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 import { EspooUser } from "@/app/types";
-import { DayPicker } from "react-day-picker";
 import { Calendar } from "./ui/calendar";
 
 interface UserDataModalProps {

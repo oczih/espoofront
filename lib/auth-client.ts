@@ -1,6 +1,5 @@
-import NextAuth, { NextAuthOptions, User } from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import LinkedInProvider from "next-auth/providers/linkedin";
 import EspooUserModel from "@/app/models/usermodel";
 import { connectDB } from "./mongoose";
 import { EspooUser } from "@/app/types";

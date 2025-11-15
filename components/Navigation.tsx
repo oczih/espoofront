@@ -22,10 +22,11 @@ interface ChecklistItem {
 
 interface NavigationProps {
   language: Language;
-  onLanguageChange: (lang: Language) => void; // <- use Language
+  onLanguageChange: (lang: Language) => void; 
+  onBooked?: () => void;
 }
 
-  export default function Navigation({ language, onLanguageChange }: NavigationProps) {
+  export default function Navigation({ language, onLanguageChange, onBooked }: NavigationProps) {
     const checklistTranslations: Record<Language, ChecklistItem[]> = {
       en: [
         { id: "1", label: "Business Idea", checked: false },
@@ -219,7 +220,7 @@ interface NavigationProps {
   createPortal(
     <div className="fixed inset-0 z-[1000] flex items-start justify-center overflow-auto bg-black/50 p-8">
       <div className="bg-white rounded-lg w-full max-w-5xl shadow-lg my-8">
-        <AppointmentBooking onBack={closeAppointment} language={language} />
+        <AppointmentBooking onBack={closeAppointment} language={language}  onBooked={onBooked} setShowAppointment={setShowAppointment} />
       </div>
     </div>,
     document.body

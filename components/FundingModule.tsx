@@ -2,7 +2,6 @@
 
 import { UserProfile, Language } from '../app/types';
 import { Card } from './ui/card';
-import { Button } from './ui/button';
 import { Progress } from './ui/progress';
 import {
   Accordion,
