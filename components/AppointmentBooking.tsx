@@ -273,7 +273,7 @@ interface AppointmentBookingProps {
                 {uploadedFile && <p className="text-sm text-green-600 mt-2">✓ {uploadedFile.name} uploaded</p>}
                 <p className="text-xs text-gray-500 mt-1">{t.uploadFormats}</p>
               </Card>
-              <Button className="w-full bg-indigo-600 hover:bg-indigo-700" onClick={handleBooking} disabled={!selectedDate || !selectedTime || loading}>
+              <Button className="w-full bg-indigo-600 hover:bg-indigo-700" onClick={handleBooking} disabled={!selectedDate || !selectedTime || !meetingType || loading}>
                 {t.confirm}
               </Button>
             </div>
