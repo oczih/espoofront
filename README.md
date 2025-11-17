@@ -49,43 +49,6 @@ This repository contains the **Next.js + TypeScript** frontend for the Junction 
 
 ---
 
-## Repository structure (important files)
-
-```
-/ (root)
-├─ app/
-├─ businesspal/
-├─ components/
-├─ lib/
-├─ kielet/
-├─ public/
-├─ .gitignore
-├─ README.md
-├─ components.json
-├─ eslint.config.mjs
-├─ next.config.ts
-├─ package.json
-├─ package-lock.json
-├─ postcss.config.mjs
-├─ tsconfig.json
-```
-
-/ (root)
-├─ app/                 # Next.js app router pages & layouts
-├─ components/          # Reusable UI components (Chat, BookingForm, AdvisorContextPanel)
-├─ lib/                 # API clients, helper utilities
-├─ styles/              # Tailwind and global styles
-├─ public/              # static assets
-├─ prisma/ or /db/      # optional DB schema / migrations (if applicable)
-├─ next.config.js
-├─ tailwind.config.js
-├─ package.json
-└─ README.md
-
-```
-
----
-
 ## Environment variables
 
 Create a `.env.local` file in the project root with the following variables:
