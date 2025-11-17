@@ -53,6 +53,24 @@ This repository contains the **Next.js + TypeScript** frontend for the Junction 
 
 ```
 / (root)
+├─ app/
+├─ businesspal/
+├─ components/
+├─ lib/
+├─ kielet/
+├─ public/
+├─ .gitignore
+├─ README.md
+├─ components.json
+├─ eslint.config.mjs
+├─ next.config.ts
+├─ package.json
+├─ package-lock.json
+├─ postcss.config.mjs
+├─ tsconfig.json
+```
+
+/ (root)
 ├─ app/                 # Next.js app router pages & layouts
 ├─ components/          # Reusable UI components (Chat, BookingForm, AdvisorContextPanel)
 ├─ lib/                 # API clients, helper utilities
@@ -63,6 +81,7 @@ This repository contains the **Next.js + TypeScript** frontend for the Junction 
 ├─ tailwind.config.js
 ├─ package.json
 └─ README.md
+
 ```
 
 ---
@@ -72,13 +91,14 @@ This repository contains the **Next.js + TypeScript** frontend for the Junction 
 Create a `.env.local` file in the project root with the following variables:
 
 ```
-NEXT_PUBLIC_API_URL=https://your-backend.example.com      # backend that proxies Featherless AI
+
+NEXT_PUBLIC_API_URL=[https://your-backend.example.com](https://your-backend.example.com)      # backend that proxies Featherless AI
 MONGODB_URI=mongodb+srv://<user>:<pass>@cluster0.mongodb.net/db
-NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_URL=[http://localhost:3000](http://localhost:3000)
 NEXTAUTH_SECRET=some_long_random_secret
 NEXTAUTH_MONGODB_URI=${MONGODB_URI}
-FEATHERLESS_PROXY_KEY=<<optional frontend key if backend requires it>>
-```
+
+````
 
 > Security note: The Featherless AI model key must be stored and used in the backend — frontend must never contain raw model API keys.
 
@@ -94,7 +114,7 @@ npm install
 pnpm install
 # or
 yarn install
-```
+````
 
 2. Add `.env.local` with variables above.
 
